@@ -1,0 +1,141 @@
+import requests
+import json
+import argparse
+import statistics
+from datetime import datetime, timedelta, timezone
+
+CONFIG_MANAGER_BASE_URL = "http://10.83.43.82/fk-mtl-config-manager/apps/app-name"
+DASHBOARD_FILE = "/Users/manoranjans.vc/idea/TestDemo/dashboard_subpanels.json"
+STEP = "60s"
+
+
+def ist_to_utc_zulu(ist_time_str):
+    # Define IST timezone (UTC+5:30)
+    IST = timezone(timedelta(hours=5, minutes=30))
+    # Parse input string as IST datetime
+    ist_time = datetime.strptime(ist_time_str, "%Y-%m-%d %H:%M:%S")
+    ist_time = ist_time.replace(tzinfo=IST)
+    # Convert to UTC
+    utc_time = ist_time.astimezone(timezone.utc)
+    # Format as ISO 8601 Zulu time
+    return utc_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+def get_tenant_id(app_id):
+    url = f"{CONFIG_MANAGER_BASE_URL}/{app_id}"
+    print(f"🔍 Fetching tenant ID for appId: {app_id}")
+    response = requests.get(url)
+    response.raise_for_status()
+    data = response.json()
+    tenant_id = data.get("id")
+    if not tenant_id:
+        raise Exception(f"❌ Tenant ID not found for appId: {app_id}")
+    return tenant_id
+
+
+def query_prometheus(ip, tenant_id, expr, start_epoch, end_epoch):
+    url = f"http://{ip}/select/{tenant_id}/prometheus/api/v1/query_range"
+    #print(f" Querying Prometheus: {expr}")
+    payload = {
+        "query": expr,
+        "start": str(start_epoch),
+        "end": str(end_epoch),
+        "step": STEP
+    }
+    response = requests.post(url, data=payload)
+    response.raise_for_status()
+    return response.json()
+
+
+
+def humanize(n):
+    return f"{n / 1000:.1f}" if n >= 1000 else f"{n:.1f}"
+
+def summarize_result(query_data,redline):
+    summaries = {}
+
+    try:
+        results = query_data["data"]["result"]
+        for series in results:
+            metric_labels = series.get("metric", {})
+            key = str(tuple(sorted(metric_labels.items())))
+            values = [float(v[1]) for v in series["values"] if v[1] is not None]
+            if not values:
+                summaries[key] = {"min": None, "max": None, "mean": None, "last": None}
+                continue
+            summaries[key] = {
+                "min": {
+                    "value": humanize(min(values)),
+                    "isBreached": float(humanize(min(values)))>redline
+                },
+                "max": {
+                    "value": humanize(max(values)),
+                    "isBreached": float(humanize(max(values)))>redline
+                },
+                "mean": {
+                    "value": humanize(round(statistics.mean(values), 2)),
+                    "isBreached": float(humanize(round(statistics.mean(values), 2)))>redline
+                },
+                "last": {
+                    "value": humanize(values[-1]),
+                    "isBreached": float(humanize((values[-1])))>redline
+                }
+            }
+
+    except Exception as e:
+        return {"error": str(e)}
+
+    return summaries
+
+
+
+
+def run(zone, start_time_str, end_time_str,redline):
+    with open(DASHBOARD_FILE) as f:
+        zone_config = json.load(f)
+
+    if zone not in zone_config:
+        raise ValueError(f"Zone '{zone}' not found in dashboard JSON.")
+
+    start_epoch = ist_to_utc_zulu(start_time_str)
+    #print(start_epoch)
+    end_epoch = ist_to_utc_zulu(end_time_str)
+    #print(end_epoch)
+    ip = zone_config[zone]["ip"]
+    # print(ip)
+    subpanels = zone_config[zone]["sub-panel"]
+
+    results = {}
+
+    for title, panel in subpanels.items():
+        app_id = panel["appId"]
+        # print(app_id)
+        tenant_id = get_tenant_id(app_id)
+        # print(tenant_id)
+        panel_summary = {}
+
+        for key, expr in panel.items():
+            if key.startswith("expr"):
+                try:
+                    query_data = query_prometheus(ip, tenant_id, expr, start_epoch, end_epoch)
+
+                    summary = summarize_result(query_data,redline)
+
+                    panel_summary[key] = summary
+                except Exception as e:
+                    panel_summary[key] = {"error": str(e)}
+
+        results[title] = panel_summary
+
+    return results
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Fetch Prometheus metric summaries per subpanel")
+    parser.add_argument("--zone", required=True, help="Zone name (e.g., hyd, calvin)")
+    parser.add_argument("--start", required=True, help="Start time in format 'YYYY-MM-DD HH:MM:SS'")
+    parser.add_argument("--end", required=True, help="End time in format 'YYYY-MM-DD HH:MM:SS'")
+    parser.add_argument("--redline", required=True,type=int)
+    args = parser.parse_args()
+
+    summary= run(args.zone, args.start, args.end,args.redline)
+    print(json.dumps(summary, indent=2))
