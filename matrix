@@ -10,15 +10,12 @@ STEP = "60s"
 
 
 def ist_to_utc_zulu(ist_time_str):
-    # Define IST timezone (UTC+5:30)
     IST = timezone(timedelta(hours=5, minutes=30))
-    # Parse input string as IST datetime
     ist_time = datetime.strptime(ist_time_str, "%Y-%m-%d %H:%M:%S")
     ist_time = ist_time.replace(tzinfo=IST)
-    # Convert to UTC
     utc_time = ist_time.astimezone(timezone.utc)
-    # Format as ISO 8601 Zulu time
     return utc_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
 
 def get_tenant_id(app_id):
     url = f"{CONFIG_MANAGER_BASE_URL}/{app_id}"
@@ -34,7 +31,6 @@ def get_tenant_id(app_id):
 
 def query_prometheus(ip, tenant_id, expr, start_epoch, end_epoch):
     url = f"http://{ip}/select/{tenant_id}/prometheus/api/v1/query_range"
-    #print(f" Querying Prometheus: {expr}")
     payload = {
         "query": expr,
         "start": str(start_epoch),
@@ -46,13 +42,12 @@ def query_prometheus(ip, tenant_id, expr, start_epoch, end_epoch):
     return response.json()
 
 
-
 def humanize(n):
     return f"{n / 1000:.1f}" if n >= 1000 else f"{n:.1f}"
 
-def summarize_result(query_data,redline):
-    summaries = {}
 
+def summarize_result(query_data, redline):
+    summaries = {}
     try:
         results = query_data["data"]["result"]
         for series in results:
@@ -65,31 +60,28 @@ def summarize_result(query_data,redline):
             summaries[key] = {
                 "min": {
                     "value": humanize(min(values)),
-                    "isBreached": float(humanize(min(values)))>redline
+                    "isBreached": min(values) > redline
                 },
                 "max": {
                     "value": humanize(max(values)),
-                    "isBreached": float(humanize(max(values)))>redline
+                    "isBreached": max(values) > redline
                 },
                 "mean": {
                     "value": humanize(round(statistics.mean(values), 2)),
-                    "isBreached": float(humanize(round(statistics.mean(values), 2)))>redline
+                    "isBreached": statistics.mean(values) > redline
                 },
                 "last": {
                     "value": humanize(values[-1]),
-                    "isBreached": float(humanize((values[-1])))>redline
+                    "isBreached": values[-1] > redline
                 }
             }
-
     except Exception as e:
         return {"error": str(e)}
 
     return summaries
 
 
-
-
-def run(zone, start_time_str, end_time_str,redline):
+def run(zone, start_time_str, end_time_str, redline, isbreached=None):
     with open(DASHBOARD_FILE) as f:
         zone_config = json.load(f)
 
@@ -97,30 +89,37 @@ def run(zone, start_time_str, end_time_str,redline):
         raise ValueError(f"Zone '{zone}' not found in dashboard JSON.")
 
     start_epoch = ist_to_utc_zulu(start_time_str)
-    #print(start_epoch)
     end_epoch = ist_to_utc_zulu(end_time_str)
-    #print(end_epoch)
     ip = zone_config[zone]["ip"]
-    # print(ip)
     subpanels = zone_config[zone]["sub-panel"]
 
     results = {}
 
     for title, panel in subpanels.items():
         app_id = panel["appId"]
-        # print(app_id)
         tenant_id = get_tenant_id(app_id)
-        # print(tenant_id)
         panel_summary = {}
 
         for key, expr in panel.items():
             if key.startswith("expr"):
                 try:
                     query_data = query_prometheus(ip, tenant_id, expr, start_epoch, end_epoch)
+                    summary = summarize_result(query_data, redline)
 
-                    summary = summarize_result(query_data,redline)
+                    if isbreached is not None:
+                        filtered_summary = {}
+                        for metric, stat in summary.items():
+                            if isinstance(stat, dict):
+                                filtered_metrics = {
+                                    k: v for k, v in stat.items()
+                                    if isinstance(v, dict) and v.get("isBreached") == isbreached
+                                }
+                                if filtered_metrics:
+                                    filtered_summary[metric] = filtered_metrics
+                        summary = filtered_summary
 
                     panel_summary[key] = summary
+
                 except Exception as e:
                     panel_summary[key] = {"error": str(e)}
 
@@ -134,8 +133,14 @@ if __name__ == "__main__":
     parser.add_argument("--zone", required=True, help="Zone name (e.g., hyd, calvin)")
     parser.add_argument("--start", required=True, help="Start time in format 'YYYY-MM-DD HH:MM:SS'")
     parser.add_argument("--end", required=True, help="End time in format 'YYYY-MM-DD HH:MM:SS'")
-    parser.add_argument("--redline", required=True,type=int)
-    args = parser.parse_args()
+    parser.add_argument("--redline", required=True, type=int, help="Threshold to flag a metric as breached")
+    parser.add_argument(
+        "--isbreached",
+        type=lambda x: x.lower() == "true",
+        required=False,
+        help="Optional: Filter summary to show only breached (true) or non-breached (false) metrics"
+    )
 
-    summary= run(args.zone, args.start, args.end,args.redline)
+    args = parser.parse_args()
+    summary = run(args.zone, args.start, args.end, args.redline, args.isbreached)
     print(json.dumps(summary, indent=2))
