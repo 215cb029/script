@@ -1,199 +1,62 @@
-Grafana
-
-manoranjans.vc logo
-General
-/
-NFR Dashboard
-
-
-
-
-
-
-Last 5 minutes
-
-
-
-
-Overall Pubsub(2 panels)
- 
-Pubsub->Harshil
-Sonic GCP -> Saransh(14 panels)
- 
-Sonic Client Side FCP + Kafka -> Raksha(22 panels)
- 
-Sonic Server Side -> Gaurang/Manishi(10 panels)
- 
-Dart - Service + Kafka => Mohit
-Specter -> Kartik(18 panels)
- 
-Pentos -> Gaurang
-fStream(7 panels)
- 
-
-NFR Dashboard / Edit Panel
-
-
-Discard
-
-Save
-
-Apply
-datasource
-
-Table view
-
-
-
-
-Last 5 minutes
-
-
-Pubsub MBps [Calvin + HYD ] Specter
-Max	Mean
-value_byte_cost_aggregate
-604 MiB	529 MiB
-Query1
-Transform0
-Alert0
-Data source
-Google Cloud MonitoringGoogle Cloud Monitoring
-
-Query options
-MD = auto = 1352
-Interval = 200ms
-
-Query inspector
-
-A
-(Google Cloud Monitoring)
-
-
-
-
-Query type
-Metrics
-
-Switch to builder
-Project
-fkp-specter-pubsub
-fetch pubsub_topic
-| metric 'pubsub.googleapis.com/topic/byte_cost'
-| align rate(1m)
-| every 1m
-| group_by [], [value_byte_cost_aggregate: aggregate(value.byte_cost)]
-Alias by
-
-Query
-
-Expression 
-
-Time series
-
-Search options
-
-
-Panel options
-Title
-Pubsub MBps [Calvin + HYD ] Specter
-Description
-Transparent background
-
-Panel links
-Repeat options
-Tooltip
-Tooltip mode
-
-
-
-Legend
-Legend mode
-
-
-
-Legend placement
-
-
-Legend values
-Select values or calculations to show in legend
-Max
-Mean
-Graph styles
-Style
-
-
-
-Line interpolation
-
-
-
-
-Line width
-1
-Fill opacity
-0
-Gradient mode
-
-
-
-
-Line style
-
-
-
-Connect null values
-
-
-
-<
-1h
-Show points
-
-
-
-Point size
-5
-Stack series
-
-
-
-Axis
-Standard options
-Unit
-bytes(IEC)
-Min
-Leave empty to calculate based on all values
-auto
-Max
-Leave empty to calculate based on all values
-auto
-Decimals
-auto
-Display name
-Change the field or series name
-none
-Color scheme
-Classic palette
-No Value
-What to show when there is no value
--
-Thresholds
-
-Add threshold
-7000000000
-Base
-Thresholds mode
-Percentage means thresholds relative to min & max
-
-
-Show thresholds
-As filled regions and lines
-Value mappings
-
-Add value mappings
-Data links
-Data links
-
-Add link
-
-Add field override
+from google.cloud import monitoring_v3
+from datetime import datetime, timedelta
+import pytz
+
+# Set your project ID
+project_id = "fkp-specter-pubsub"
+client = monitoring_v3.MetricServiceClient()
+project_name = f"projects/{project_id}"
+
+# Define time interval (last 5 minutes)
+end_time = datetime.utcnow().replace(tzinfo=pytz.UTC)
+start_time = end_time - timedelta(minutes=5)
+
+interval = monitoring_v3.TimeInterval({
+    "end_time": {"seconds": int(end_time.timestamp())},
+    "start_time": {"seconds": int(start_time.timestamp())},
+})
+
+# Define aggregation: 1-minute alignment, align to rate
+aggregation = monitoring_v3.Aggregation({
+    "alignment_period": {"seconds": 60},
+    "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_RATE,
+    "cross_series_reducer": monitoring_v3.Aggregation.Reducer.REDUCE_NONE,
+})
+
+# Define the metric type
+metric_type = "pubsub.googleapis.com/topic/byte_cost"
+
+results = []
+
+# Make the request
+for time_series in client.list_time_series(
+    request={
+        "name": project_name,
+        "filter": f'metric.type = "{metric_type}"',
+        "interval": interval,
+        "aggregation": aggregation,
+        "view": monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
+    }
+):
+    values = [point.value.double_value for point in time_series.points]
+    if values:
+        max_val = max(values)
+        min_val = min(values)
+        mean_val = sum(values) / len(values)
+        resource_labels = time_series.resource.labels
+        metric_labels = time_series.metric.labels
+        results.append({
+            "resource": resource_labels,
+            "metric_labels": metric_labels,
+            "max": max_val,
+            "min": min_val,
+            "mean": mean_val,
+        })
+
+# Print results
+for r in results:
+    print(f"\nResource: {r['resource']}")
+    print(f"Metric Labels: {r['metric_labels']}")
+    print(f"Max: {r['max']:.2f} B/s")
+    print(f"Min: {r['min']:.2f} B/s")
+    print(f"Mean: {r['mean']:.2f} B/s")
