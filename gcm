@@ -1,0 +1,199 @@
+Grafana
+
+manoranjans.vc logo
+General
+/
+NFR Dashboard
+
+
+
+
+
+
+Last 5 minutes
+
+
+
+
+Overall Pubsub(2 panels)
+ 
+Pubsub->Harshil
+Sonic GCP -> Saransh(14 panels)
+ 
+Sonic Client Side FCP + Kafka -> Raksha(22 panels)
+ 
+Sonic Server Side -> Gaurang/Manishi(10 panels)
+ 
+Dart - Service + Kafka => Mohit
+Specter -> Kartik(18 panels)
+ 
+Pentos -> Gaurang
+fStream(7 panels)
+ 
+
+NFR Dashboard / Edit Panel
+
+
+Discard
+
+Save
+
+Apply
+datasource
+
+Table view
+
+
+
+
+Last 5 minutes
+
+
+Pubsub MBps [Calvin + HYD ] Specter
+Max	Mean
+value_byte_cost_aggregate
+604 MiB	529 MiB
+Query1
+Transform0
+Alert0
+Data source
+Google Cloud MonitoringGoogle Cloud Monitoring
+
+Query options
+MD = auto = 1352
+Interval = 200ms
+
+Query inspector
+
+A
+(Google Cloud Monitoring)
+
+
+
+
+Query type
+Metrics
+
+Switch to builder
+Project
+fkp-specter-pubsub
+fetch pubsub_topic
+| metric 'pubsub.googleapis.com/topic/byte_cost'
+| align rate(1m)
+| every 1m
+| group_by [], [value_byte_cost_aggregate: aggregate(value.byte_cost)]
+Alias by
+
+Query
+
+Expression 
+
+Time series
+
+Search options
+
+
+Panel options
+Title
+Pubsub MBps [Calvin + HYD ] Specter
+Description
+Transparent background
+
+Panel links
+Repeat options
+Tooltip
+Tooltip mode
+
+
+
+Legend
+Legend mode
+
+
+
+Legend placement
+
+
+Legend values
+Select values or calculations to show in legend
+Max
+Mean
+Graph styles
+Style
+
+
+
+Line interpolation
+
+
+
+
+Line width
+1
+Fill opacity
+0
+Gradient mode
+
+
+
+
+Line style
+
+
+
+Connect null values
+
+
+
+<
+1h
+Show points
+
+
+
+Point size
+5
+Stack series
+
+
+
+Axis
+Standard options
+Unit
+bytes(IEC)
+Min
+Leave empty to calculate based on all values
+auto
+Max
+Leave empty to calculate based on all values
+auto
+Decimals
+auto
+Display name
+Change the field or series name
+none
+Color scheme
+Classic palette
+No Value
+What to show when there is no value
+-
+Thresholds
+
+Add threshold
+7000000000
+Base
+Thresholds mode
+Percentage means thresholds relative to min & max
+
+
+Show thresholds
+As filled regions and lines
+Value mappings
+
+Add value mappings
+Data links
+Data links
+
+Add link
+
+Add field override
