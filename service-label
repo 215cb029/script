@@ -1,0 +1,90 @@
+def summarize_result(query_data, redline,unit,service_label):
+    summaries = {}
+    try:
+        results = query_data["data"]["result"]
+        for series in results:
+            metric_labels = series.get("metric", {})
+            key = str(tuple(sorted(metric_labels.items())))
+            values = [float(v[1]) for v in series["values"] if v[1] is not None]
+            if not values:
+                summaries[key] = {"min": None, "max": None, "mean": None, "last": None}
+                continue
+            summaries[key] = {
+                "min": {
+                    "value": min(values),
+                    "isBreached": min(values) > redline
+                },
+                "max": {
+                    "value": max(values),
+                    "isBreached": max(values) > redline
+                },
+                "mean": {
+                    "value": round(statistics.mean(values), 2),
+                    "isBreached": round(statistics.mean(values), 2) > redline
+                },
+                "last": {
+                    "value": values[-1],
+                    "isBreached": values[-1] > redline
+                },
+                "unit": {
+                    "value": unit
+                },
+                "service-label":{
+                    "value": service_label
+                }
+            }
+    except Exception as e:
+        return {"error": str(e)}
+    return summaries
+
+#Executes Prometheus queries for a specified zone and time range, then summarizes the results.
+def run(zone, start_time, end_time, redline, isbreached=None,servicelabel=None):
+    with open(DASHBOARD_FILE) as f:
+        zone_config = json.load(f)
+
+    if zone not in zone_config:
+        raise ValueError(f"Zone '{zone}' not found in dashboard JSON.")
+
+    start_utc = ist_to_utc_zulu(start_time)
+    end_utc = ist_to_utc_zulu(end_time)
+    ip = zone_config[zone]["ip"]
+    subpanels = zone_config[zone]["sub-panel"]
+
+    results = {}
+
+    for title, panel in subpanels.items():
+        app_id = panel["appId"]
+        unit=panel["unit"]
+        service_label=panel["service-label"]
+        tenant_id = get_tenant_id(app_id)
+        panel_summary = {}
+
+        for key, expr in panel.items():
+            if key.startswith("expr"):
+                try:
+                    query_data = query_prometheus(ip, tenant_id, expr, start_utc, end_utc)
+                    summary = summarize_result(query_data, redline,unit,service_label)
+                    if isbreached is not None:
+                        filtered_summary = {}
+                        for metric, stat in summary.items():
+                            if isinstance(stat, dict):
+                                filtered_metrics = {
+                                    k: v for k, v in stat.items()
+                                    if isinstance(v, dict) and v.get("isBreached") == isbreached
+                                }
+                                if "unit" in stat:
+                                    filtered_metrics["unit"] = stat["unit"]
+                                if "service-label" in stat:
+                                    filtered_metrics["service-label"] = stat["service-label"]
+                                if filtered_metrics:
+                                    filtered_summary[metric] = filtered_metrics
+                        summary = filtered_summary
+
+                    panel_summary[expr] = summary
+
+                except Exception as e:
+                    panel_summary[key] = {"error": str(e)}
+
+        results[title] = panel_summary
+
+    return results
