@@ -1,8 +1,36 @@
+import re
+
+def get_job_name(subscription, topic):
+    # Pieces after prefixes
+    sub_tail = subscription.split("subscriptions/", 1)[-1]
+    topic_tail = topic.split("topics/", 1)[-1]
+
+    # Last word from topic (prefer "--", else "-", else ".")
+    if "--" in topic_tail:
+        topic_last = topic_tail.rsplit("--", 1)[-1]
+    elif "-" in topic_tail:
+        topic_last = topic_tail.rsplit("-", 1)[-1]
+    else:
+        topic_last = topic_tail.rsplit(".", 1)[-1]
+
+    # Strip trailing "-sub"
+    sub_core = re.sub(r'-sub$', '', sub_tail)
+
+    # Look for a word between topic_last and the final "-sub"
+    m = re.search(rf'(?:^|-+){re.escape(topic_last)}-+([^-]+)$', sub_core)
+    if m:
+        return m.group(1)
+
+    # Fallback: first chunk after subscriptions/ using "--" as separator
+    return sub_core.split("--", 1)[0]
+
+
+# Tests
 topic1 = "projects/fkp-sonic-pubsub/topics/DiscoveryContentShareClickJobHyd--join--retry"
 subscription1 = "projects/fkp-sonic-pubsub/subscriptions/DiscoveryContentShareClickJobHyd--join--retry-sub"
 
 topic2 = "projects/fkp-sonic-pubsub/topics/in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentShareClick--test"
 subscription2 = "projects/fkp-sonic-pubsub/subscriptions/in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentShareClick--test-DiscoveryContentShareClickJobHyd-sub"
 
-print(get_job_name(subscription1, topic1))  # Output: DiscoveryContentShareClickJobHyd
-print(get_job_name(subscription2, topic2))  # Output: DiscoveryContentShareClickJobHyd
+print(get_job_name(subscription1, topic1))  # DiscoveryContentShareClickJobHyd
+print(get_job_name(subscription2, topic2))  # DiscoveryContentShareClickJobHyd
