@@ -1,0 +1,24 @@
+INPUT	
+Jobname	m3-neo-viesti-job-dci
+DC prefix	in-chennai-1
+	in-hyderabad-1
+TaskName	m3NeoViestiJobDCI
+Topic Name	dart.fkint.cp.ca_discover.DiscoveryContentImpression
+Topic	
+	in-chennai-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression
+	in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression
+	in-chennai-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--test
+	in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--test
+	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--retry
+	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--retry--test
+	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--join--retry
+	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--sideline
+Subscriptions	
+	in-chennai-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--m3-neo-viesti-job-dci--sub
+	in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--m3-neo-viesti-job-dci--sub
+	in-chennai-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--test-m3-neo-viesti-job-dci-sub
+	in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--test-m3-neo-viesti-job-dci-sub
+	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--retry-sub
+	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--retry--test-m3-neo-viesti-job-dci-sub
+	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--join--retry-sub
+	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--sideline-sub
