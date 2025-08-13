@@ -1,65 +1,8 @@
-import json
-import re
-import pandas as pd
+topic1 = "projects/fkp-sonic-pubsub/topics/DiscoveryContentShareClickJobHyd--join--retry"
+subscription1 = "projects/fkp-sonic-pubsub/subscriptions/DiscoveryContentShareClickJobHyd--join--retry-sub"
 
-def extract_jobname(subscription_name: str, topic_last_word: str) -> str:
-    """
-    Extracts the job name from a subscription string.
-    """
-    # Get only the actual subscription short name (remove 'projects/.../subscriptions/')
-    sub_short = subscription_name.split("/")[-1]
+topic2 = "projects/fkp-sonic-pubsub/topics/in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentShareClick--test"
+subscription2 = "projects/fkp-sonic-pubsub/subscriptions/in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentShareClick--test-DiscoveryContentShareClickJobHyd-sub"
 
-    # Step 1: Remove trailing `--sub` or `-sub`
-    sub_stripped = re.sub(r'--?sub$', '', sub_short)
-
-    # Step 2: Check for `--test-<jobname>` pattern
-    match = re.search(r'--test-([^-]+(?:-[^-]+)*)$', sub_stripped)
-    if match:
-        return match.group(1)
-
-    # Step 3: Reserved words
-    reserved = {"retry", "sideline", "join", "error", "dlq", "deadletter", topic_last_word}
-    parts = sub_stripped.split("--")
-    tail = parts[-1]
-    if tail not in reserved and not any(tail.startswith(r + "-") for r in reserved):
-        return tail
-
-    # Step 4: Fallback — detect CamelCase TaskName and take prefix
-    camel_match = re.search(r'^(.+?)-[A-Za-z0-9]*[A-Z][a-zA-Z0-9]*--', sub_stripped)
-    if camel_match:
-        return camel_match.group(1)
-
-    return None
-
-
-def process_pubsub_file_to_excel(file_path: str, output_excel: str):
-    with open(file_path, "r") as f:
-        data = json.load(f)
-
-    rows = []
-    for sub in data.get("pubsub_subscriptions", []):
-        subscription_name = sub["name"]
-        topic_name = sub["topic_name"]
-
-        # Get the last word of topic name (after last dot or slash)
-        topic_last_word = topic_name.split(".")[-1]
-
-        jobname = extract_jobname(subscription_name, topic_last_word)
-
-        rows.append({
-            "JobName": jobname,
-            "SubscriptionName": subscription_name,
-            "TopicName": topic_name,
-            "TopicLastWord": topic_last_word
-        })
-
-    # Create DataFrame and save to Excel
-    df = pd.DataFrame(rows)
-    df.to_excel(output_excel, index=False)
-    print(f"✅ Excel file created: {output_excel}")
-
-
-# Example usage
-json_file = "pubsub_data.json"        # Your JSON input file
-output_excel = "pubsub_output.xlsx"   # Your Excel output file
-process_pubsub_file_to_excel(json_file, output_excel)
+print(get_job_name(subscription1, topic1))  # Output: DiscoveryContentShareClickJobHyd
+print(get_job_name(subscription2, topic2))  # Output: DiscoveryContentShareClickJobHyd
