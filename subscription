@@ -1,24 +1,50 @@
-INPUT	
-Jobname	m3-neo-viesti-job-dci
-DC prefix	in-chennai-1
-	in-hyderabad-1
-TaskName	m3NeoViestiJobDCI
-Topic Name	dart.fkint.cp.ca_discover.DiscoveryContentImpression
-Topic	
-	in-chennai-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression
-	in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression
-	in-chennai-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--test
-	in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--test
-	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--retry
-	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--retry--test
-	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--join--retry
-	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--sideline
-Subscriptions	
-	in-chennai-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--m3-neo-viesti-job-dci--sub
-	in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--m3-neo-viesti-job-dci--sub
-	in-chennai-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--test-m3-neo-viesti-job-dci-sub
-	in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--test-m3-neo-viesti-job-dci-sub
-	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--retry-sub
-	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--retry--test-m3-neo-viesti-job-dci-sub
-	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--join--retry-sub
-	m3-neo-viesti-job-dci-m3NeoViestiJobDCI--sideline-sub
+import re
+
+def extract_jobname(subscription: str) -> str:
+    """
+    Extracts the job name from a subscription string based on the rules described.
+    """
+
+    # Step 1: Remove trailing `--sub` or `-sub`
+    sub_stripped = re.sub(r'--?sub$', '', subscription)
+
+    # Step 2: Check for `--test-<jobname>` pattern
+    match = re.search(r'--test-([^-]+(?:-[^-]+)*)$', sub_stripped)
+    if match:
+        return match.group(1)
+
+    # Step 3: Check simple "at-end" form with reserved keywords excluded
+    reserved = {"retry", "sideline", "join", "error", "dlq", "deadletter"}
+    parts = sub_stripped.split("--")
+    tail = parts[-1]
+    if tail not in reserved and not any(tail.startswith(r + "-") for r in reserved):
+        return tail
+
+    # Step 4: Fallback — derive from TaskName pattern (CamelCase detection)
+    camel_match = re.search(r'^(.+?)-[A-Za-z0-9]*[A-Z][a-zA-Z0-9]*--', sub_stripped)
+    if camel_match:
+        return camel_match.group(1)
+
+    # Step 5: As a final fallback, try known jobnames list
+    known_jobnames = ["m3-neo-viesti-job-dci"]  # Add more if needed
+    for job in known_jobnames:
+        if job in subscription:
+            return job
+
+    return None  # Couldn't extract
+
+
+# --------------------------
+# Example usage
+# --------------------------
+subs = [
+    "in-chennai-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--m3-neo-viesti-job-dci--sub",
+    "in-hyderabad-1.dart.fkint.cp.ca_discover.DiscoveryContentImpression--test-m3-neo-viesti-job-dci-sub",
+    "m3-neo-viesti-job-dci-m3NeoViestiJobDCI--retry-sub",
+    "m3-neo-viesti-job-dci-m3NeoViestiJobDCI--retry--test-m3-neo-viesti-job-dci-sub",
+    "m3-neo-viesti-job-dci-m3NeoViestiJobDCI--join--retry-sub",
+    "m3-neo-viesti-job-dci-m3NeoViestiJobDCI--sideline-sub"
+]
+
+for s in subs:
+    print(f"{s}  -->  {extract_jobname(s)}")
