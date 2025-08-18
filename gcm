@@ -1,54 +1,21 @@
 from google.cloud import monitoring_v3
-from datetime import datetime, timedelta
-import pytz
 
-# Set your project ID
-project_id = "fkp-specter-pubsub"
-client = monitoring_v3.MetricServiceClient()
-project_name = f"projects/{project_id}"
 
-# Define time interval (last 13 minutes to get ~13 data points)
-end_time = datetime.utcnow().replace(tzinfo=pytz.UTC)
-start_time = end_time - timedelta(minutes=13)
+def run_query2(mql_query, project_id):
+    client = monitoring_v3.QueryServiceClient()
+    project_name = f"projects/{project_id}"
+    list = []
+    try:
+        request = monitoring_v3.QueryTimeSeriesRequest(name=project_name, query=mql_query)
+        response = client.query_time_series(request=request)
+        for point in response.time_series_data:
+            for entry in point.point_data:
+                for val in entry.values:
+                    list.append(val.double_value)
+    except Exception as e:
+        print(f"Error querying Monitoring API for project {project_id}: {e}")
+    return list
 
-interval = monitoring_v3.TimeInterval({
-    "end_time": {"seconds": int(end_time.timestamp())},
-    "start_time": {"seconds": int(start_time.timestamp())},
-})
-
-# Define aggregation: 1-minute alignment, align to rate
-aggregation = monitoring_v3.Aggregation({
-    "alignment_period": {"seconds": 60},
-    "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_RATE,
-    "cross_series_reducer": monitoring_v3.Aggregation.Reducer.REDUCE_NONE,
-})
-
-# Define the metric type
-metric_type = "pubsub.googleapis.com/topic/byte_cost"
-
-# Collect values with timestamps
-data_points = []
-
-# Make the request
-for time_series in client.list_time_series(
-    request={
-        "name": project_name,
-        "filter": f'metric.type = "{metric_type}"',
-        "interval": interval,
-        "aggregation": aggregation,
-        "view": monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
-    }
-):
-    for point in time_series.points:
-        timestamp = point.interval.end_time
-        value = point.value.double_value
-        # Convert timestamp to ISO format string
-        ts_str = timestamp.ToDatetime().isoformat()
-        data_points.append((ts_str, value))
-
-# Reverse to chronological order
-data_points = list(reversed(data_points))
-
-# Print the results
-for ts, val in data_points:
-    print(f"{ts}  ->  {val:.6f}")
+if __name__ == "__main__":
+    mql_query="fetch pubsub_subscription | metric 'pubsub.googleapis.com/subscription/ack_message_count' | filter resource.project_id == 'fkp-specter-pubsub' && (resource.subscription_id == 'in-hyderabad-1.dart.fkint.ixp.catalog.ProductStateEntity--M3DataProductAttributesProd--sub') | align rate(1m) | every 1m | group_by [metric.delivery_type], [value_ack_message_count_aggregate: aggregate(value.ack_message_count)] | within d'2025/07/23-11:34:39', d'2025/08/23-12:04:39'"
+    print(run_query2(mql_query,'fkp-specter-pubsub'))
