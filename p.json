@@ -1,0 +1,30 @@
+{
+  "region": "asia-south1",
+  "project_id": "fkp-fstream-compute",
+  "pubsub_subscriptions": [
+    {
+      "ack_deadline_seconds": "300",
+      "message_retention_duration": "259200s",
+      "name": "projects/fkp-fstream-pubsub/subscriptions/SetDataTrafficMasterKafkaToHbaseAnkur--test-SetDataTrafficMasterKafkaToHbaseAnkur-sub",
+      "retain_acked_messages": false,
+      "expiration_policy_ttl": "",
+      "labels": {},
+      "enable_exactly_once_delivery": false,
+      "topic_name": "projects/fkp-fstream-pubsub/topics/SetDataTrafficMasterKafkaToHbaseAnkur--test",
+      "enable_message_ordering": false
+    }
+  ],
+  "subscriptions_permissions": [
+    {
+      "name": "projects/fkp-specter-pubsub/subscriptions/in-hyderabad-1.dart.fkint.ixp.catalog.ProductStateEntity--M3DataProductAttributesProd--sub",
+      "permissions": [
+        {
+          "role": "organizations/431577135830/roles/pubsub_subscribe_and_seek_only",
+          "members": [
+            "serviceAccount:fk-m3-ops-gcp-prod-pubsub@fk-m3-ops-gcp-prod.iam.gserviceaccount.com"
+          ]
+        }
+      ]
+    }
+    ]
+}

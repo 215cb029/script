@@ -1,0 +1,59 @@
+{
+  "graph": {
+    "Unhealthy Nodes": {
+      "mql1": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-fsg-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql2": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-user-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql3": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-de-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql4": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-m3-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql5": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-replication-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql6": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-search-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql7": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-gap-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql8": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql9": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-harbour-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql10": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-user-compute",
+        "aliasBy": "{{r}}"
+      },
+      "unit": "",
+      "service-label": "fStream"
+    }
+
+  }
+}

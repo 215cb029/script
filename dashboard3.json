@@ -1,0 +1,84 @@
+{
+  "hyd": {
+    "ip": "10.24.44.196",
+    "sub-panel": {
+      "Specter Hyd Kafka Bytes In": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_BytesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Hyd Message in rate (per sec)": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_MessagesInPerSec_OneMinuteRate) by(topic)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Hyd Producer Byte Rate": {
+        "expr1": "sum(jmx_kafka_server_Produce_byte_rate_byterate) by(client_id)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Offline partitions count(HYD)": {
+        "expr1": "sum(jmx_kafka_controller_KafkaController_OfflinePartitionsCount_Value)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Specter Hyd URP": {
+        "expr1": "sum(jmx_kafka_server_ReplicaManager_UnderReplicatedPartitions_Value)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Specter Hyd Kafka Load Avg (1m)": {
+        "expr1": "max(system_load_relative_shortterm) by(host)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Specter Hyd Kafka Disk Usage": {
+        "expr1": "min(system_df_used_percent_bytes{df=\"sdb\"}) by(host,df)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Brokers Produce latency (Hyd)": {
+        "expr1": "max(jmx_kafka_network_RequestMetrics_TotalTimeMs_Produce_99thPercentile)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Zookeeper (Disk Size Used % - Hyd)": {
+        "expr1": "max(system_df_used_percent_bytes{host=~\".*-zk-.*\"}) by (host)",
+        "appId": "prod-fdp-specter"
+      }
+    }
+  },
+  "calvin": {
+    "ip": "10.83.45.174",
+    "sub-panel": {
+      "Specter Calvin Kafka Bytes In": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_BytesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Calvin Producer Byte Rate": {
+        "expr1": "sum(jmx_kafka_server_Produce_byte_rate_byterate) by(client_id)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Message in rate (per sec)": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_MessagesInPerSec_OneMinuteRate) by(topic)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Offline partitions count(CALVIN)": {
+        "expr1": "sum(jmx_kafka_controller_KafkaController_OfflinePartitionsCount_Value)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Specter Kafka Disk Usage": {
+        "expr1": "max(system_df_used_percent_bytes{df=\"vdb\"})",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Specter CALVIN URP": {
+        "expr1": "sum(jmx_kafka_server_ReplicaManager_UnderReplicatedPartitions_Value)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Brokers Produce latency (Calvin)": {
+        "expr1": "max(jmx_kafka_network_RequestMetrics_TotalTimeMs_Produce_99thPercentile)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Specter calvin Kafka Load Avg (1m)": {
+        "expr1": "max(system_load_relative_shortterm) by(host)",
+        "appId": "prod-fdg-specter-kafka"
+      },
+      "FYI: Zookeeper (Disk Size Used % - Calvin)": {
+        "expr1": "max(system_df_used_percent_bytes{host=~\".*-zookeeper-.*\"}) by (host)",
+        "appId": "prod-fdp-specter"
+      }
+    }
+  }
+}

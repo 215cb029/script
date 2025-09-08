@@ -1,0 +1,11 @@
+{
+  "hyd": {
+    "ip": "10.24.44.196",
+    "sub-panel": {
+      "Dart Hyd Request Rate": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process=~\"dart-k8s.*\"})",
+        "appId": "prod-fdpingestion"
+      }
+    }
+  }
+}

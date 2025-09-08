@@ -1,0 +1,54 @@
+{
+  "hyd": {
+    "ip": "10.24.44.196",
+    "sub-panel": {
+      "[Hyd] Http Request Rate Breakdown": {
+        "expr1": "sum(jmx_sonic_api_v1_aggregate_data_time_OneMinuteRate{zone=\"in-hyderabad-1\",kaas_podid=~\".*server-side.*\",process=~\"sonic.*\"})",
+        "appId": "prod-fdp-sonic"
+      },
+      "[Hyd] Server Aggregate API response time": {
+        "expr1": "max(jmx_sonic_api_v1_aggregate_data_time_99thPercentile{kaas_podid=~\".*server-side.*\",process=~\"sonic.*\",zone=\"in-hyderabad-1\"}) by(kaas_podid,process)",
+        "expr2": "max(jmx_sonic_api_v1_aggregate_data_time_50thPercentile{process=~\"sonic.*\",zone=\"in-hyderabad-1\",kaas_podid=~\".*server-side.*\"}) by(process,kaas_podid)",
+        "appId": "prod-fdp-sonic"
+      },
+      "Hyd 5xx Rate (per sec) (stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{kaas_podid=~\"sonic-server.*\",zone=\"in-hyderabad-1\",process=~\"sonic.*\"}) by(kaas_podid)",
+        "appId": "prod-fdp-sonic"
+      },
+      "[Hyd] HTTP 4xx Rate (Stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{kaas_podid=~\"sonic-server.*\",zone=\"in-hyderabad-1\",process=~\"sonic.*\"}) by(kaas_podid)",
+        "appId": "prod-fdp-sonic"
+      },
+      "ELB CPU Usage (hyd)": {
+        "expr1": "avg(haproxy_cpu{proxy_name=~\"prod-fdp-sonic___prod-sonic-svc-server-side-hyd-vip\"}) by(proxy_name)",
+        "appId": "elb"
+      }
+    }
+  },
+  "calvin": {
+    "ip": "10.83.45.174",
+    "sub-panel": {
+      "[Calvin] Http Request Rate Breakdown": {
+        "expr1": "sum(jmx_sonic_api_v1_aggregate_data_time_OneMinuteRate{zone=\"in-chennai-2\",kaas_podid=~\".*server-side.*\",process=~\"sonic.*\"})",
+        "appId": "prod-fdp-sonic"
+      },
+      "[Calvin] Server Aggregate API response time": {
+        "expr1": "max(jmx_sonic_api_v1_aggregate_data_time_99thPercentile{kaas_podid=~\".*server-side.*\",process=~\"sonic.*\",zone=\"in-chennai-2\"}) by(kaas_podid,process)",
+        "expr2": "max(jmx_sonic_api_v1_aggregate_data_time_50thPercentile{process=~\"sonic.*\",zone=\"in-chennai-2\",kaas_podid=~\".*server-side.*\"}) by(process,kaas_podid)",
+        "appId": "prod-fdp-sonic"
+      },
+      "[Calvin] 5xx Rate (per sec) (stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{kaas_podid=~\".*server-side.*\",process=~\"sonic.*\",zone=\"in-chennai-2\"}) by(kaas_podid)",
+        "appId": "prod-fdp-sonic"
+      },
+      "[Calvin] HTTP 4xx Rate (Stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{kaas_podid=~\"sonic-server.*\",zone=\"in-chennai-2\",process=~\"sonic.*\"}) by(kaas_podid)",
+        "appId": "prod-fdp-sonic"
+      },
+      "ELB CPU Usage (calvin)": {
+        "expr1": "avg(haproxy_cpu{proxy_name=~\"prod-fdp-sonic___prod-sonic-svc-server-side-vip\"}) by(proxy_name)",
+        "appId": "elb"
+      }
+    }
+  }
+}

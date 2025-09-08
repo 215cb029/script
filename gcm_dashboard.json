@@ -1,0 +1,335 @@
+{
+  "graph": {
+    "Overall Sonic Pubsub": {
+      "mql1": {
+        "query": "fetch pubsub_topic | metric 'pubsub.googleapis.com/topic/byte_cost' | align rate(1m) | every 1m | group_by [], [value_byte_cost_aggregate: aggregate(value.byte_cost)] | graph_period 2s",
+        "aliasBy": "publish",
+        "project": "fkp-sonic-pubsub"
+      },
+      "mql2": {
+        "query": "fetch pubsub_subscription | metric 'pubsub.googleapis.com/subscription/byte_cost' | align rate(1m) | every 1m | group_by [], [value_byte_cost_aggregate: aggregate(value.byte_cost)] | graph_period 2s",
+        "aliasBy": "consume (fStream+m3)",
+        "project": "fkp-sonic-pubsub"
+      },
+      "mql3": {
+        "query": "fetch pubsub_subscription | metric 'pubsub.googleapis.com/subscription/byte_cost' | filter (metadata.user_labels.channel == 'sonic') | align rate(1m) | every 1m | group_by [], [value_byte_cost_aggregate: aggregate(value.byte_cost)] | graph_period 2s",
+        "aliasBy": "consume sco",
+        "project": "fkp-sco-fresh"
+      },
+      "unit": "bytes(IEC)",
+      "service-label": "Overall Pubsub"
+    },
+    "Overall Specter Pubsub":{
+      "mql1": {
+        "query": "fetch pubsub_topic | metric 'pubsub.googleapis.com/topic/byte_cost' | align rate(1m) | every 1m | group_by [], [value_byte_cost_aggregate: aggregate(value.byte_cost)] | graph_period 2s",
+        "project": "fkp-specter-pubsub",
+        "aliasBy": "publish"
+      },
+      "mql2": {
+        "query": "fetch pubsub_subscription | metric 'pubsub.googleapis.com/subscription/byte_cost' | align rate(1m) | every 1m | group_by [], [value_byte_cost_aggregate: aggregate(value.byte_cost)] | graph_period 2s",
+        "project": "fkp-specter-pubsub",
+        "aliasBy": "consume (fStream+m3)"
+      },
+      "mql3": {
+        "query": "fetch pubsub_subscription | metric 'pubsub.googleapis.com/subscription/byte_cost' | filter (metadata.user_labels.channel == 'specter') | align rate(1m) | every 1m | group_by [], [value_byte_cost_aggregate: aggregate(value.byte_cost)] | graph_period 2s",
+        "aliasBy": "consume sco",
+        "project": "fkp-sco-fresh"
+      },
+      "unit": "bytes(IEC)",
+      "service-label": "Overall Pubsub"
+    },
+    "Pubsub MBps [Calvin + HYD ] Specter": {
+      "mql1": {
+        "query": "fetch pubsub_topic | metric 'pubsub.googleapis.com/topic/byte_cost' | align rate(1m) | every 1m | group_by [], [value_byte_cost_aggregate: aggregate(value.byte_cost)] | graph_period 5s",
+        "aliasBy": "",
+        "project": "fkp-specter-pubsub"
+      },
+      "unit": "bytes(IEC)",
+      "service-label": "Pubsub"
+    },
+    "FYI PubSub MIR Specter": {
+      "mql1": {
+        "query": "fetch pubsub_topic | metric 'pubsub.googleapis.com/topic/send_request_count' | align rate(1m) | every 1m | group_by [], [value_send_request_count_aggregate: aggregate(value.send_request_count)] | graph_period 5s",
+        "project": "fkp-specter-pubsub",
+        "aliasBy": ""
+      },
+      "unit": "short",
+      "service-label": "Pubsub"
+    },
+    "Pubsub MBps [Calvin + HYD + Client Side] Sonic": {
+      "mql1": {
+        "query": "fetch pubsub_topic | metric 'pubsub.googleapis.com/topic/byte_cost' | align rate(1m) | every 1m | group_by [], [value_byte_cost_aggregate: aggregate(value.byte_cost)] | graph_period 5s",
+        "project": "fkp-sonic-pubsub",
+        "aliasBy": ""
+      },
+      "unit": "bytes(IES)",
+      "service-label": "Pubsub"
+    },
+    "PubSub MIR Sonic": {
+      "mql1": {
+        "query": "fetch pubsub_topic | metric 'pubsub.googleapis.com/topic/send_request_count' | align rate(1m) | every 1m | group_by [], [value_send_request_count_aggregate: aggregate(value.send_request_count)] | graph_period 5s",
+        "project": "fkp-sonic-pubsub",
+        "aliasBy": ""
+      },
+      "unit": "short",
+      "service-label": "Pubsub"
+    },
+    "Pubsub MBps [Calvin + HYD ] Dart": {
+      "mql1": {
+        "query": "fetch pubsub_topic | metric 'pubsub.googleapis.com/topic/byte_cost' | align rate(1m) | every 1m | group_by [], [value_byte_cost_aggregate: aggregate(value.byte_cost)] | graph_period 5s",
+        "project": "fkp-dart-pubsub",
+        "aliasBy": ""
+      },
+      "unit": "bytes(IEC)",
+      "service-label": "Pubsub"
+    },
+    "PubSub MIR Dart": {
+      "mql1": {
+        "query": "fetch pubsub_topic | metric 'pubsub.googleapis.com/topic/send_request_count' | align rate(1m) | every 1m | group_by [], [value_send_request_count_aggregate: aggregate(value.send_request_count)] | graph_period 5s",
+        "project": "fkp-dart-pubsub",
+        "aliasBy": ""
+      },
+      "unit": "short",
+      "service-label": "Pubsub"
+    },
+    "5XX Request Count | Mumbai": {
+      "mql1": {
+        "query": "fetch https_lb_rule | metric 'loadbalancing.googleapis.com/https/request_count' | filter (resource.backend_target_name == 'mci-vx262k-28226--u44glr-fdp-sonic-gcp-prod-sonic-service-mcs' && metric.response_code_class == 500) | align rate(1m) | every 1m | group_by [], [value_backend_request_count_aggregate: aggregate(value.request_count)] | graph_period 5s",
+        "project": "fk-sparrow-k8s",
+        "aliasBy": "{{ metric.label.response_code }}"
+      },
+      "unit": "request/sec(rps)",
+      "service-label": "Sonic GCP"
+    },
+    "5XX Request Count | Noida": {
+      "mql1": {
+        "query": "fetch https_lb_rule | metric 'loadbalancing.googleapis.com/https/request_count' | filter (resource.backend_target_name == 'mci-vx262k-28226--w9i1fu-fdp-sonic-gcp-prod-sonic-service-mcs' && metric.response_code_class == 500) | align rate(1m) | every 1m | group_by [], [value_backend_request_count_aggregate: aggregate(value.request_count)] | graph_period 5s ",
+        "project": "fk-sparrow-k8s",
+        "aliasBy": "{{ metric.label.response_code }}"
+      },
+      "unit": "request/sec(rps)",
+      "service-label": "Sonic GCP"
+    },
+    "Frontend Request Bytes (asia-south-1)": {
+      "mql1": {
+        "query": "fetch https_lb_rule | metric 'loadbalancing.googleapis.com/https/request_bytes_count' | filter (resource.backend_target_name == 'mci-vx262k-28226--u44glr-fdp-sonic-gcp-prod-sonic-service-mcs') | align rate(1m) | every 1m | group_by [], [value_request_bytes_count_aggregate: aggregate(value.request_bytes_count)] | graph_period 2s",
+        "project": "fk-sparrow-k8s",
+        "aliasBy": "{{ metric.label.response_code }}"
+      },
+      "unit": "bytes/sec(SI)",
+      "service-label": "Sonic GCP"
+    },
+    "Frontend Request Bytes (asia-south2)": {
+      "mql1": {
+        "query": "fetch https_lb_rule | metric 'loadbalancing.googleapis.com/https/request_bytes_count' | filter (resource.backend_target_name == 'mci-vx262k-28226--w9i1fu-fdp-sonic-gcp-prod-sonic-service-mcs') | align rate(1m) | every 1m | group_by [], [value_request_bytes_count_aggregate: aggregate(value.request_bytes_count)] | graph_period 500ms",
+        "project": "fk-sparrow-k8s",
+        "aliasBy": "{{ metric.label.response_code }}"
+      },
+      "unit": "bytes/sec(SI)",
+      "service-label": "Sonic GCP"
+    },
+    "4XX Request Count | Noida": {
+      "mql1": {
+        "query": "fetch https_lb_rule | metric 'loadbalancing.googleapis.com/https/request_count' | filter (resource.backend_target_name == 'mci-vx262k-28226--w9i1fu-fdp-sonic-gcp-prod-sonic-service-mcs' && metric.response_code_class == 400) | align rate(1m) | every 1m | group_by [], [value_backend_request_count_aggregate: aggregate(value.request_count)] | graph_period 500ms",
+        "project": "fk-sparrow-k8s",
+        "aliasBy": "{{ metric.label.response_code }}"
+      },
+      "unit": "request/sec(rps)",
+      "service-label": "Sonic GCP"
+    },
+    "CLOUD ARMOR Denied Request Count | Mumbai": {
+      "mql1": {
+        "query": "fetch network_security_policy | metric 'networksecurity.googleapis.com/https/request_count' | filter (metric.backend_target_name == 'mci-vx262k-28226--u44glr-fdp-sonic-gcp-prod-sonic-service-mcs') && (metric.blocked == true()) | align rate(1m) | every 1m | group_by [], [value_request_count_aggregate: aggregate(value.request_count)] | graph_period 5s",
+        "project": "fk-sparrow-k8s",
+        "aliasBy": "DENIED REQUEST COUNT"
+      },
+      "unit": "request/sec(rps)",
+      "service-label": "Sonic GCP"
+    },
+    "4XX Request Count | Mumbai":{
+      "mql1": {
+        "query": "fetch https_lb_rule | metric 'loadbalancing.googleapis.com/https/request_count' | filter (resource.backend_target_name == 'mci-vx262k-28226--u44glr-fdp-sonic-gcp-prod-sonic-service-mcs' && metric.response_code_class == 400) | align rate(1m) | every 1m | group_by [], [value_backend_request_count_aggregate: aggregate(value.request_count)] | graph_period 5s",
+        "project": "fk-sparrow-k8s",
+        "aliasBy": "{{ metric.label.response_code }}"
+      },
+      "unit": "request/sec(rps)",
+      "service-label": "Sonic GCP"
+    },
+    "CLOUD ARMOR Denied Request Count | Noida": {
+      "mql1": {
+        "query": "fetch network_security_policy | metric 'networksecurity.googleapis.com/https/request_count' | filter (metric.backend_target_name == 'mci-vx262k-28226--w9i1fu-fdp-sonic-gcp-prod-sonic-service-mcs') && (metric.blocked == true()) | align rate(1m) | every 1m | group_by [], [value_request_count_aggregate: aggregate(value.request_count)] | graph_period 5s",
+        "project": "fk-sparrow-k8s",
+        "aliasBy": "DENIED REQUEST COUNT"
+      },
+      "unit": "request/sec(rps)",
+      "service-label": "Sonic GCP"
+    },
+    "Unhealthy Nodes": {
+      "mql1": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-fsg-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql2": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-user-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql3": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-de-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql4": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-m3-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql5": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-replication-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql6": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-search-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql7": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-gap-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql8": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql9": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-harbour-compute",
+        "aliasBy": "{{r}}"
+      },
+      "mql10": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/nodemanagers' | filter (metric.status == 'unhealthy') | group_by 1m, [value_nodemanagers_mean: mean(value.nodemanagers)] | every 1m | group_by [], [value_nodemanagers_mean_max: max(value_nodemanagers_mean)] | graph_period 2s",
+        "project": "fkp-fstream-user-compute",
+        "aliasBy": "{{r}}"
+      },
+      "unit": "",
+      "service-label": "fStream"
+    },
+    "Scheduling Delay for jobs": {
+      "mql1": {
+        "query": "fetch gce_instance | metric 'external.googleapis.com/user/statsd.timers.scheduling.delay.hist.mean.p99' | group_by 1m, [value_p99_mean: mean(value.p99)] | every 1m | group_by [], [value_p99_mean_mean: mean(value_p99_mean)] | graph_period 1s",
+        "project": "fkp-fstream-m3-compute",
+        "aliasBy": "{{job}}"
+      },
+      "mql2": {
+        "query": "fetch gce_instance | metric 'external.googleapis.com/user/statsd.timers.scheduling.delay.hist.mean.p99' | group_by 1m, [value_p99_mean: mean(value.p99)] | every 1m | group_by [], [value_p99_mean_mean: mean(value_p99_mean)] | graph_period 1s",
+        "project": "fkp-fstream-de-compute",
+        "aliasBy": "{{job}}"
+      },
+      "mql3": {
+        "query": "fetch gce_instance | metric 'external.googleapis.com/user/statsd.timers.scheduling.delay.hist.mean.p99' | group_by 1m, [value_p99_mean: mean(value.p99)] | every 1m | group_by [], [value_p99_mean_mean: mean(value_p99_mean)] | graph_period 1s",
+        "project": "fkp-fstream-search-compute",
+        "aliasBy": "{{job}}"
+      },
+      "mql4": {
+        "query": "fetch gce_instance | metric 'external.googleapis.com/user/statsd.timers.scheduling.delay.hist.mean.p99' | group_by 1m, [value_p99_mean: mean(value.p99)] | every 1m | group_by [], [value_p99_mean_mean: mean(value_p99_mean)] | graph_period 1s",
+        "project": "fkp-fstream-gap-compute",
+        "aliasBy": "{{job}}"
+      },
+      "mql5": {
+        "query": "fetch gce_instance | metric 'external.googleapis.com/user/statsd.timers.scheduling.delay.hist.mean.p99' | group_by 1m, [value_p99_mean: mean(value.p99)] | every 1m | group_by [], [value_p99_mean_mean: mean(value_p99_mean)] | graph_period 1s",
+        "project": "fkp-fstream-fsg-compute",
+        "aliasBy": "{{job}}"
+      },
+      "mql6": {
+        "query": "fetch gce_instance | metric 'external.googleapis.com/user/statsd.timers.scheduling.delay.hist.mean.p99' | group_by 1m, [value_p99_mean: mean(value.p99)] | every 1m | group_by [], [value_p99_mean_mean: mean(value_p99_mean)] | graph_period 1s",
+        "project": "fkp-fstream-fsg-compute-2",
+        "aliasBy": "{{job}}"
+      },
+      "mql7": {
+        "query": "fetch gce_instance | metric 'external.googleapis.com/user/statsd.timers.scheduling.delay.hist.mean.p99' | group_by 1m, [value_p99_mean: mean(value.p99)] | every 1m | group_by [], [value_p99_mean_mean: mean(value_p99_mean)] | graph_period 1s",
+        "project": "fkp-fstream-user-compute",
+        "aliasBy": "{{job}}"
+      },
+      "mql8": {
+        "query": "fetch gce_instance | metric 'external.googleapis.com/user/statsd.timers.scheduling.delay.hist.mean.p99' | group_by 1m, [value_p99_mean: mean(value.p99)] | every 1m | group_by [], [value_p99_mean_mean: mean(value_p99_mean)] | graph_period 1s",
+        "project": "fkp-replication-compute-2",
+        "aliasBy": "{{job}}"
+      },
+      "mql9": {
+        "query": "fetch gce_instance | metric 'external.googleapis.com/user/statsd.timers.scheduling.delay.hist.mean.p99' | group_by 1m, [value_p99_mean: mean(value.p99)] | every 1m | group_by [], [value_p99_mean_mean: mean(value_p99_mean)] | graph_period 1s",
+        "project": "fkp-replication-compute",
+        "aliasBy": "{{job}}"
+      },
+      "mql10": {
+        "query": "fetch gce_instance | metric 'external.googleapis.com/user/statsd.timers.scheduling.delay.hist.mean.p99' | group_by 1m, [value_p99_mean: mean(value.p99)] | every 1m | group_by [], [value_p99_mean_mean: mean(value_p99_mean)] | graph_period 1s",
+        "project": "fkp-fstream-fsg-compute-2",
+        "aliasBy": "{{job}}"
+      },
+      "unit": "milliseconds(ms)",
+      "service-label": "fStream"
+    },
+    "Pending Memory ":{
+      "mql1": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/pending_memory_size' | group_by 1m, [value_pending_memory_size_mean: mean(value.pending_memory_size)] | every 1m | group_by [], [value_pending_memory_size_mean_aggregate: aggregate(value_pending_memory_size_mean)] | graph_period 500ms",
+        "project": "fkp-fstream-de-compute",
+        "aliasBy": "{{c}}"
+      },
+      "mql2": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/pending_memory_size' | group_by 1m, [value_pending_memory_size_mean: mean(value.pending_memory_size)] | every 1m | group_by [], [value_pending_memory_size_mean_aggregate: aggregate(value_pending_memory_size_mean)] | graph_period 500ms",
+        "project": "fkp-fstream-fsg-compute",
+        "aliasBy": "{{c}}"
+      },
+      "mql3": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/pending_memory_size' | group_by 1m, [value_pending_memory_size_mean: mean(value.pending_memory_size)] | every 1m | group_by [], [value_pending_memory_size_mean_aggregate: aggregate(value_pending_memory_size_mean)] | graph_period 500ms",
+        "project": "fkp-fstream-m3-compute",
+        "aliasBy": "{{c}}"
+      },
+      "mql4": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/pending_memory_size' | group_by 1m, [value_pending_memory_size_mean: mean(value.pending_memory_size)] | every 1m | group_by [], [value_pending_memory_size_mean_aggregate: aggregate(value_pending_memory_size_mean)] | graph_period 500ms",
+        "project": "fkp-fstream-gap-compute",
+        "aliasBy": "{{c}}"
+      },
+      "mql5": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/pending_memory_size' | group_by 1m, [value_pending_memory_size_mean: mean(value.pending_memory_size)] | every 1m | group_by [], [value_pending_memory_size_mean_aggregate: aggregate(value_pending_memory_size_mean)] | graph_period 500ms",
+        "project": "fkp-fstream-user-compute",
+        "aliasBy": "{{c}}"
+      },
+      "mql6": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/pending_memory_size' | group_by 1m, [value_pending_memory_size_mean: mean(value.pending_memory_size)] | every 1m | group_by [], [value_pending_memory_size_mean_aggregate: aggregate(value_pending_memory_size_mean)] | graph_period 500ms",
+        "project": "fkp-replication-compute",
+        "aliasBy": "{{job}}"
+      },
+      "mql7": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/pending_memory_size' | group_by 1m, [value_pending_memory_size_mean: mean(value.pending_memory_size)] | every 1m | group_by [], [value_pending_memory_size_mean_aggregate: aggregate(value_pending_memory_size_mean)] | graph_period 500ms",
+        "project": "fkp-fstream-compute-2",
+        "aliasBy":"{{c}}"
+      },
+      "mql8": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/pending_memory_size' | group_by 1m, [value_pending_memory_size_mean: mean(value.pending_memory_size)] | every 1m | group_by [], [value_pending_memory_size_mean_aggregate: aggregate(value_pending_memory_size_mean)] | graph_period 500ms",
+        "project": "fkp-replication-compute-2",
+        "aliasBy": "{{c}}"
+      },
+      "mql9": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/pending_memory_size' | group_by 1m, [value_pending_memory_size_mean: mean(value.pending_memory_size)] | every 1m | group_by [], [value_pending_memory_size_mean_aggregate: aggregate(value_pending_memory_size_mean)] | graph_period 500ms",
+        "project": "fkp-fstream-search-compute",
+        "aliasBy": "{{c}}"
+      },
+      "mql10": {
+        "query": "fetch cloud_dataproc_cluster | metric 'dataproc.googleapis.com/cluster/yarn/pending_memory_size' | group_by 1m, [value_pending_memory_size_mean: mean(value.pending_memory_size)] | every 1m | group_by [], [value_pending_memory_size_mean_aggregate: aggregate(value_pending_memory_size_mean)] | graph_period 500ms",
+        "project": "fkp-fstream-compute",
+        "aliasBy": "{{c}}"
+      },
+      "unit": "gigabytes",
+      "service-label": "fStream"
+
+    }
+
+
+
+
+  }
+}

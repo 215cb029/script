@@ -1,0 +1,514 @@
+{
+  "hyd": {
+    "ip": "10.24.44.196",
+    "sub-panel": {
+      "FYI: Dart MIR hyd": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_MessagesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-dart-kafka",
+        "unit": ""
+      },
+      "Dart Hyd Request Rate": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process=~\"dart-k8s.*\"})",
+        "appId": "prod-fdpingestion",
+        "unit": "short"
+      },
+      "Dart Hyd Per Pod QPS": {
+        "expr1": "max(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process=~\"dart-k8s.*\"})",
+        "appId": "prod-fdpingestion",
+        "unit": "short"
+
+      },
+      "Hyderabad 5xx Rate (per sec) (stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{process=~\"dart.*\"})",
+        "appId": "prod-fdpingestion",
+        "unit": ""
+      },
+      "4xx Rate Hyd(per sec) (stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{process=~\"dart.*\"})",
+        "appId": "prod-fdpingestion",
+        "unit": ""
+      },
+      "Hyd ELB Responses": {
+        "expr1": "sum(rate(haproxy_response_1xx_prod_fdpingestion___prod_dart_hyd_b{server_name=\"FRONTEND\",stack=\"v3\",zone=\"in-hyderabad-1\"}))",
+        "expr2": "sum(rate(haproxy_response_2xx_prod_fdpingestion___prod_dart_hyd_b{server_name=\"FRONTEND\",stack=\"v3\",zone=\"in-hyderabad-1\"}))",
+        "expr3": "sum(rate(haproxy_response_3xx_prod_fdpingestion___prod_dart_hyd_b{server_name=\"FRONTEND\",stack=\"v3\",zone=\"in-hyderabad-1\"}))",
+        "expr4": "sum(rate(haproxy_response_4xx_prod_fdpingestion___prod_dart_hyd_b{server_name=\"FRONTEND\",stack=\"v3\",zone=\"in-hyderabad-1\"}))",
+        "expr5": "sum(rate(haproxy_response_5xx_prod_fdpingestion___prod_dart_hyd_b{server_name=\"FRONTEND\",stack=\"v3\",zone=\"in-hyderabad-1\"}))",
+        "appId": "elb",
+        "unit": ""
+      },
+      "Dart Hyd Dropwizard latency": {
+        "expr1": "max(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_99thPercentile{process=~\"dart.*\"})",
+        "expr2": "avg(jmx_com_fdp_post_ingestion_latency_99thPercentile{process=\"dart-k8s\"})",
+        "appId": "prod-fdpingestion",
+        "unit": "milliseconds(ms)"
+      },
+      "Dart Hyd Kafka Bytes In": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_BytesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-dart-kafka",
+        "unit": "bytes(IEC)"
+      },
+      "Dart Hyd Kafka Disk Usage": {
+        "expr1": "max(system_df_used_percent_bytes{df=\"sdc\"})",
+        "expr2": "min(system_df_used_percent_bytes{df=\"sdb\"})",
+        "appId": "prod-fdg-dart-kafka",
+        "unit": ""
+      },
+      "Dart Hyd Kafka Load Avg(1m)": {
+        "expr1": "max(system_load_relative_shortterm) by(host)",
+        "appId": "prod-fdpingestion",
+        "unit": ""
+      },
+      "Dart Hyd latency": {
+        "expr1": "max (jmx_com_fdp_post_ingestion_latency_99thPercentile{process=\"dart-k8s\"})",
+        "expr2": "avg(jmx_com_fdp_post_ingestion_latency_99thPercentile{process=\"dart-k8s\"})",
+        "appId": "prod-fdpingestion",
+        "unit": "milliseconds(ms)"
+      },
+      "Dart Hyd ELB CPU Usage": {
+        "expr1": "max(haproxy_cpu{proxy_name=~\"prod-fdpingestion___prod-dart-hyd-b\"})",
+        "expr2": "avg(haproxy_cpu{proxy_name=~\"prod-fdpingestion___prod-dart-vip\"})",
+        "appId": "elb",
+        "unit": "short"
+      },
+      "Zookeeper (Disk Size Used % - Hyd)": {
+        "expr1": "max(system_df_used_percent_bytes{host=~\".*-zk-.*\"})",
+        "appId": "prod-fdp-dart-zookeeper",
+        "unit": ""
+      },
+      "FYI: Brokers Produce latency (hyd)": {
+        "expr1": "max(jmx_kafka_network_RequestMetrics_TotalTimeMs_Produce_99thPercentile)",
+        "appId": "prod-fdg-dart-kafka",
+        "unit": "milliseconds(ms)"
+      },
+      "HTTP Request Rate (SVC-Hyd)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{zone=\"in-hyderabad-1\",kaas_podid=~\"sonic-d.*\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": "short"
+      },
+      "5xx Rate (per sec) (hyd)": {
+        "expr1": "sum(rate(haproxy_response_5xx_prod_fdp_sonic___prod_sonic_hyd_vip_a{stack=\"v3\",server_name=\"FRONTEND\",zone=\"in-hyderabad-1\"}))",
+        "appId": "elb",
+        "unit": ""
+      },
+      "Client Aggregate API response time [Client Side Pods hyd]]": {
+        "expr1": "max(jmx_sonic_api_v1_mapi_aggregate_time_99thPercentile{kaas_podid=~\".*sonic-deployment.*\"})",
+        "expr2": "max(jmx_sonic_api_ingest_client_data_time_99thPercentile{kaas_podid=~\".*sonic-deployment.*\",zone=~\"$zone\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": "milliseconds(ms)"
+      },
+      "FYI: Sonic Client Hyd Responses": {
+        "expr1": "sum(rate(haproxy_response_1xx_prod_fdp_sonic___prod_sonic_hyd_vip_a{server_name=\"FRONTEND\",stack=~\"v3\"}))",
+        "expr2": "sum(rate(haproxy_response_2xx_prod_fdp_sonic___prod_sonic_hyd_vip_a{stack=~\"v3\",server_name=\"FRONTEND\"}))",
+        "expr3": "sum(rate(haproxy_response_3xx_prod_fdp_sonic___prod_sonic_hyd_vip_a{server_name=\"FRONTEND\",stack=~\"v3\"}))",
+        "expr4": "sum(rate(haproxy_response_4xx_prod_fdp_sonic___prod_sonic_hyd_vip_a{server_name=\"FRONTEND\",stack=~\"v3\"}))",
+        "expr5": "sum(rate(haproxy_response_5xx_prod_fdp_sonic___prod_sonic_hyd_vip_a{server_name=\"FRONTEND\",stack=~\"v3\"}))",
+        "appId": "elb",
+        "unit": ""
+      },
+      "Session Service Latency | Hyderabad": {
+        "expr1": "max(tailme_ResponseTimes_P99{})",
+        "expr2": "max(tailme_ResponseTimes_P95{})",
+        "appId": "fk-session-service-sonic",
+        "unit": ""
+      },
+      "Bytes In per sec (Hyd)": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_BytesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-sonic-kafka",
+        "unit": "bytes(SI)"
+      },
+      "Brokers Produce latency (Hyd)": {
+        "expr1": "max(jmx_kafka_network_RequestMetrics_TotalTimeMs_Produce_99thPercentile)",
+        "appId": "prod-fdg-sonic-kafka",
+        "unit": "milliseconds(ms)"
+      },
+      "Load (1m) (Hyd)": {
+        "expr1": "max(system_load_relative_shortterm)",
+        "appId": "prod-fdg-sonic-kafka",
+        "unit": "short"
+      },
+      "ELB CPU Usage (Hyd)": {
+        "expr1": "avg(haproxy_cpu{proxy_name=~\"prod-fdp-sonic___prod-sonic-hyd-vip-a\"})",
+        "appId": "elb",
+        "unit": "short"
+      },
+      "FYI: Sonic Hyd URP": {
+        "expr1": "sum(jmx_kafka_server_ReplicaManager_UnderReplicatedPartitions_Value)",
+        "appId": "prod-fdg-sonic-kafka",
+        "unit": ""
+      },
+      "[Hyd] Http Request Rate Breakdown": {
+        "expr1": "sum(jmx_sonic_api_v1_aggregate_data_time_OneMinuteRate{zone=\"in-hyderabad-1\",kaas_podid=~\".*server-side.*\",process=~\"sonic.*\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": ""
+      },
+      "[Hyd] Server Aggregate API response time": {
+        "expr1": "max(jmx_sonic_api_v1_aggregate_data_time_99thPercentile{kaas_podid=~\".*server-side.*\",process=~\"sonic.*\",zone=\"in-hyderabad-1\"})",
+        "expr2": "max(jmx_sonic_api_v1_aggregate_data_time_50thPercentile{process=~\"sonic.*\",zone=\"in-hyderabad-1\",kaas_podid=~\".*server-side.*\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": ""
+      },
+      "Hyd 5xx Rate (per sec) (stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{kaas_podid=~\"sonic-server.*\",zone=\"in-hyderabad-1\",process=~\"sonic.*\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": ""
+      },
+      "[Hyd] HTTP 4xx Rate (Stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{kaas_podid=~\"sonic-server.*\",zone=\"in-hyderabad-1\",process=~\"sonic.*\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": ""
+      },
+      "ELB CPU Usage (hyd)": {
+        "expr1": "avg(haproxy_cpu{proxy_name=~\"prod-fdp-sonic___prod-sonic-svc-server-side-hyd-vip\"})",
+        "appId": "elb",
+        "unit": "short"
+      },
+      "Specter Hyd Kafka Bytes In": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_BytesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Hyd Message in rate (per sec)": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_MessagesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Hyd Producer Byte Rate": {
+        "expr1": "sum(jmx_kafka_server_Produce_byte_rate_byterate) by(client_id)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Offline partitions count(HYD)": {
+        "expr1": "sum(jmx_kafka_controller_KafkaController_OfflinePartitionsCount_Value)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Specter Hyd URP": {
+        "expr1": "sum(jmx_kafka_server_ReplicaManager_UnderReplicatedPartitions_Value)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Specter Hyd Kafka Load Avg (1m)": {
+        "expr1": "max(system_load_relative_shortterm)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Specter Hyd Kafka Disk Usage": {
+        "expr1": "min(system_df_used_percent_bytes{df=\"sdb\"})",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Brokers Produce latency (Hyd)": {
+        "expr1": "max(jmx_kafka_network_RequestMetrics_TotalTimeMs_Produce_99thPercentile)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": "milliseconds(ms)"
+      },
+      "FYI: Zookeeper (Disk Size Used % - Hyd)": {
+        "expr1": "max(system_df_used_percent_bytes{host=~\".*-zk-.*\"})",
+        "appId": "prod-fdp-specter",
+        "unit": ""
+      },
+      "Hyd Pentos ELB CPU Usage": {
+        "expr1": "avg(haproxy_cpu{zone=\"in-hyderabad-1\",proxy_name=~\"prod-fdp-pentos___prod-pentos-hyd-b\"})",
+        "appId": "elb",
+        "unit": "short"
+      },
+      "Hyd 99th Percentile k8s": {
+        "expr1": "max(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_99thPercentile{process=\"pentos-k8s\",zone=\"in-hyderabad-1\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      },
+      "Hyd HTTP Request Rate": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-hyderabad-1\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      },
+      "Hyd 4xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-hyderabad-1\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      },
+      "Hyd 5xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-hyderabad-1\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      }
+
+    }
+  },
+  "calvin": {
+    "ip": "10.83.45.174",
+    "sub-panel": {
+      "FYI: Dart MIR calvin": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_MessagesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-dart-kafka",
+        "unit": ""
+      },
+      "Dart Calvin Request Rate": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process=~\"dart-k8s.*\"})",
+        "appId": "prod-fdpingestion",
+        "unit": "short"
+      },
+      "Dart Calvin Per Pod QPS": {
+        "expr1": "max(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process=~\"dart-k8s.*\"})",
+        "appId": "prod-fdpingestion",
+        "unit": "short"
+      },
+      "Calvin 5xx Rate (per sec) (stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{process=~\"dart.*\"})",
+        "appId": "prod-fdpingestion",
+        "unit": ""
+      },
+      "4xx Rate Calvin (per sec) (stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{process=~\"dart.*\"})",
+        "appId": "prod-fdpingestion",
+        "unit": ""
+      },
+      "Calvin ELB Responses": {
+        "expr1": "sum(rate(haproxy_response_1xx_prod_fdpingestion___prod_dart_vip{server_name=\"FRONTEND\",stack=\"v3\",zone=\"in-chennai-2\"}))",
+        "expr2": "sum(rate(haproxy_response_2xx_prod_fdpingestion___prod_dart_vip{server_name=\"FRONTEND\",stack=\"v3\",zone=\"in-chennai-2\"}))",
+        "expr3": "sum(rate(haproxy_response_3xx_prod_fdpingestion___prod_dart_vip{server_name=\"FRONTEND\",stack=\"v3\",zone=\"in-chennai-2\"}))",
+        "expr4": "sum(rate(haproxy_response_4xx_prod_fdpingestion___prod_dart_vip{server_name=\"FRONTEND\",stack=\"v3\",zone=\"in-chennai-2\"}))",
+        "expr5": "sum(rate(haproxy_response_5xx_prod_fdpingestion___prod_dart_vip{stack=\"v3\",zone=\"in-chennai-2\",server_name=\"FRONTEND\"}))",
+        "appId": "elb",
+        "unit": ""
+      },
+      "Dart Calvin latency": {
+        "expr1": "avg(jmx_com_fdp_post_ingestion_latency_99thPercentile{process=\"dart-k8s\"})",
+        "expr2": "avg(jmx_com_fdp_post_ingestion_latency_99thPercentile{process=\"dart-k8s\"})",
+        "appId": "prod-fdpingestion",
+        "unit": "milliseconds(ms)"
+      },
+      "Dart Calvin Dropwizard latency": {
+        "expr1": "max(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_99thPercentile{process=~\"dart.*\"})",
+        "expr2": "avg(jmx_com_fdp_post_ingestion_latency_99thPercentile{process=\"dart-k8s\"})",
+        "appId": "prod-fdpingestion",
+        "unit": "milliseconds(ms)"
+      },
+      "Dart Kafka Bytes In": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_BytesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-dart-kafka",
+        "unit": "bytes(IEC)"
+      },
+      "Dart Calvin Kafka Disk Usage": {
+        "expr1": "max(system_df_used_percent_bytes{df=\"vdb\"})",
+        "appId": "prod-fdg-dart-kafka",
+        "unit": ""
+      },
+      "Dart Kafka Load Avg(1m)": {
+        "expr1": "max(system_load_relative_shortterm)",
+        "appId": "prod-fdpingestion",
+        "unit": ""
+      },
+      "Dart ELB CPU Usage": {
+        "expr1": "sum(haproxy_cpu{proxy_name=~\"prod-fdpingestion___prod-dart-hyd-b\"})",
+        "expr2": "max(haproxy_cpu{proxy_name=~\"prod-fdpingestion___prod-dart-vip\"})",
+        "appId": "elb",
+        "unit": "short"
+      },
+      "Zookeeper (Disk Size Used % - Calvin)": {
+        "expr1": "max(system_df_used_percent_bytes{host=~\".*-zookeeper-.*\"})",
+        "appId": "prod-fdp-dart-zookeeper",
+        "unit": ""
+      },
+      "FYI: Brokers Produce latency (Calvin)": {
+        "expr1": "max(jmx_kafka_network_RequestMetrics_TotalTimeMs_Produce_99thPercentile)",
+        "appId": "prod-fdg-dart-kafka",
+        "unit": "milliseconds(ms)"
+      },
+      "HTTP Request Rate | Noida": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{zone=\"asia-south2\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": "short"
+      },
+      "Client response time [Client Pods] | Noida": {
+        "expr1": "max(jmx_sonic_api_ingest_client_data_time_99thPercentile{kaas_podid=~\".*sonic-deployment.*\",zone=\"asia-south2\"})",
+        "expr2": "avg(jmx_sonic_api_ingest_client_data_time_99thPercentile{kaas_podid=~\".*sonic-deployment.*\",zone=\"asia-south2\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": "milliseconds(ms)"
+      },
+      "UserService, Bigtable | Noida": {
+        "expr1": "avg(jmx_com_flipkart_colosseum_storage_cache_impl_HbaseCache_time_99thPercentile{type=\"get\",zone=\"asia-south2\"})",
+        "expr2": "avg(jmx_com_flipkart_colosseum_storage_cache_impl_HbaseCache_time_99thPercentile{type=\"put\",zone=\"asia-south2\"})",
+        "expr3": "avg(jmx_metrics_com_flipkart_colosseum_external_clients_userservice_UserServiceClient_getData_time_99thPercentile{zone=\"asia-south2\"})",
+        "expr4": "avg(jmx_metrics_com_flipkart_colosseum_external_kevlar_KevlarValidation_validateAt_time_99thPercentile{zone=\"asia-south2\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": ""
+      },
+      "HTTP Request Rate (SVC-Calvin)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{zone=\"in-chennai-2\", kaas_podid=~\"sonic-d.*\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": "short"
+      },
+      "Client Aggregate API response time [Client Side Pods]": {
+        "expr1": "max(jmx_sonic_api_v1_mapi_aggregate_time_99thPercentile{zone=\"in-chennai-2\",kaas_podid=~\".*sonic-deployment.*\"})",
+        "expr2": "max(jmx_sonic_api_ingest_client_data_time_99thPercentile{kaas_podid=~\".*sonic-deployment.*\",zone=~\"$zone\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": "milliseconds(ms)"
+      },
+      "5xx Rate (per sec) (Calvin)": {
+        "expr1": "sum(rate(haproxy_response_5xx_prod_fdp_sonic___prod_sonic_svc_vip{server_name=\"FRONTEND\",stack=~\"v3\"}))",
+        "appId": "elb",
+        "unit": ""
+      },
+      "FYI: Sonic Client ELB Responses": {
+        "expr1": "sum(rate(haproxy_response_1xx_prod_fdp_sonic___prod_sonic_svc_vip{server_name=\"FRONTEND\",stack=~\"v3\"}))",
+        "expr2": "sum(rate(haproxy_response_2xx_prod_fdp_sonic___prod_sonic_svc_vip{stack=~\"v3\",server_name=\"FRONTEND\"}))",
+        "expr3": "sum(rate(haproxy_response_3xx_prod_fdp_sonic___prod_sonic_svc_vip{server_name=\"FRONTEND\",stack=~\"v3\"}))",
+        "expr4": "sum(rate(haproxy_response_4xx_prod_fdp_sonic___prod_sonic_svc_vip{server_name=\"FRONTEND\",stack=~\"v3\"}))",
+        "expr5": "sum(rate(haproxy_response_5xx_prod_fdp_sonic___prod_sonic_svc_vip{server_name=\"FRONTEND\",stack=~\"v3\"}))",
+        "appId": "elb",
+        "unit": ""
+      },
+      "Session Service Latency | Calvin": {
+        "expr1": "max(tailme_ResponseTimes_P99{})",
+        "expr2": "max(tailme_ResponseTimes_P95{})",
+        "appId": "fk-w3-session-service",
+        "unit": ""
+      },
+      "Bytes In per sec (Calvin)": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_BytesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-sonic-kafka",
+        "unit": "bytes(SI)"
+      },
+      "Brokers Produce latency (Calvin)": {
+        "expr1": "max(jmx_kafka_network_RequestMetrics_TotalTimeMs_Produce_99thPercentile)",
+        "appId": "prod-fdg-sonic-kafka",
+        "unit": "milliseconds(ms)"
+      },
+      "Load (1m) (Calvin)": {
+        "expr1": "max(system_load_relative_shortterm)",
+        "appId": "prod-fdg-sonic-kafka",
+        "unit": "short"
+      },
+      "ELB CPU Usage (calvin )": {
+        "expr1": "avg(haproxy_cpu{proxy_name=~\"prod-fdp-sonic___prod-sonic-svc-vip\"})",
+        "appId": "elb",
+        "unit": "short"
+      },
+      "FYI: Sonic Calvin URP": {
+        "expr1": "sum(jmx_kafka_server_ReplicaManager_UnderReplicatedPartitions_Value)",
+        "appId": "prod-fdg-sonic-kafka",
+        "unit": ""
+      },
+      "[Calvin] Http Request Rate Breakdown": {
+        "expr1": "sum(jmx_sonic_api_v1_aggregate_data_time_OneMinuteRate{zone=\"in-chennai-2\",kaas_podid=~\".*server-side.*\",process=~\"sonic.*\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": ""
+      },
+      "[Calvin] Server Aggregate API response time": {
+        "expr1": "max(jmx_sonic_api_v1_aggregate_data_time_99thPercentile{kaas_podid=~\".*server-side.*\",process=~\"sonic.*\",zone=\"in-chennai-2\"})",
+        "expr2": "max(jmx_sonic_api_v1_aggregate_data_time_50thPercentile{process=~\"sonic.*\",zone=\"in-chennai-2\",kaas_podid=~\".*server-side.*\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": ""
+      },
+      "[Calvin] 5xx Rate (per sec) (stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{kaas_podid=~\".*server-side.*\",process=~\"sonic.*\",zone=\"in-chennai-2\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": ""
+      },
+      "[Calvin] HTTP 4xx Rate (Stacked)": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{kaas_podid=~\"sonic-server.*\",zone=\"in-chennai-2\",process=~\"sonic.*\"})",
+        "appId": "prod-fdp-sonic",
+        "unit": ""
+      },
+      "ELB CPU Usage (calvin)": {
+        "expr1": "avg(haproxy_cpu{proxy_name=~\"prod-fdp-sonic___prod-sonic-svc-server-side-vip\"})",
+        "appId": "elb",
+        "unit": "short"
+      },
+      "Specter Calvin Kafka Bytes In": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_BytesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Calvin Producer Byte Rate": {
+        "expr1": "sum(jmx_kafka_server_Produce_byte_rate_byterate)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Message in rate (per sec)": {
+        "expr1": "sum(jmx_kafka_server_BrokerTopicMetrics_MessagesInPerSec_OneMinuteRate)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Offline partitions count(CALVIN)": {
+        "expr1": "sum(jmx_kafka_controller_KafkaController_OfflinePartitionsCount_Value)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Specter Kafka Disk Usage": {
+        "expr1": "max(system_df_used_percent_bytes{df=\"vdb\"})",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Specter CALVIN URP": {
+        "expr1": "sum(jmx_kafka_server_ReplicaManager_UnderReplicatedPartitions_Value)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Brokers Produce latency (Calvin )": {
+        "expr1": "max(jmx_kafka_network_RequestMetrics_TotalTimeMs_Produce_99thPercentile)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": "milliseconds(ms)"
+      },
+      "FYI: Specter calvin Kafka Load Avg (1m)": {
+        "expr1": "max(system_load_relative_shortterm)",
+        "appId": "prod-fdg-specter-kafka",
+        "unit": ""
+      },
+      "FYI: Zookeeper (Disk Size Used % - Calvin)": {
+        "expr1": "max(system_df_used_percent_bytes{host=~\".*-zookeeper-.*\"})",
+        "appId": "prod-fdp-specter",
+        "unit": ""
+      },
+      "Calvin Pentos ELB CPU Usage": {
+        "expr1": "avg(haproxy_cpu{proxy_name=~\"prod-fdp-pentos___fdp-pentos-elb\",zone=\"in-chennai-2\"})",
+        "appId": "elb",
+        "unit": ""
+      },
+      "Calvin 99th Percentile k8s": {
+        "expr1": "max(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_99thPercentile{process=\"pentos-k8s\",zone=\"in-chennai-2\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      },
+      "Calvin HTTP Request Rate": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-chennai-2\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      },
+      "Calvin 4xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-chennai-2\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      },
+      "Calvin 5xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-chennai-2\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      },
+      "Noida 99th Percentile k8s": {
+        "expr1": "max(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_99thPercentile{process=\"pentos-k8s\",zone=\"asia-south2\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      },
+      "Noida HTTP Request Rate": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process=\"pentos-k8s\",zone=\"asia-south2\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      },
+      "Noida 4xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"asia-south2\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      },
+      "Noida 5xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"asia-south2\"})",
+        "appId": "prod-fdp-pentos",
+        "unit": ""
+      }
+
+    }
+
+    }
+  }

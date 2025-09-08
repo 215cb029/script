@@ -1,0 +1,42 @@
+{
+"as1":
+{
+"ip": "10.24.44.196",
+"sub-panel": {
+"HTTP Request Rate | Mumbai": {
+"expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{zone="asia-south1"})",
+"appId": "prod-fdp-sonic",
+"unit": "short"
+},
+
+"Client response time [Client Pods] | Mumbai": {
+"expr1": "max(jmx_sonic_api_ingest_client_data_time_99thPercentile{kaas_podid=~".*sonic-deployment.*"})",
+"expr2": "avg(jmx_sonic_api_ingest_client_data_time_99thPercentile{kaas_podid=~".*sonic-deployment.*"})"
+"appId": "prod-fdp-sonic",
+"unit": "milliseconds(ms)"
+},
+"Mumbai 99th Percentile k8s": {
+"expr1": "max(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_99thPercentile{process="pentos-k8s",zone="asia-south1"})",
+"appId": "prod-fdp-pentos",
+"unit": ""
+
+},
+"Mumbai HTTP Request Rate": {
+"expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process="pentos-k8s",zone="asia-south1"})",
+"appId": "prod-fdp-pentos",
+"unit": ""
+},
+"Mumbai 4xx Rate (per sec) (stacked) k8s": {
+"expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{process="pentos-k8s",zone="asia-south1"})",
+"appId": "prod-fdp-pentos",
+"unit": ""
+},
+"Mumbai 5xx Rate (per sec) (stacked) k8s": {
+"expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{process="pentos-k8s",zone="asia-south1"})",
+"appId": "prod-fdp-pentos",
+"unit": ""
+}
+
+}
+}
+}

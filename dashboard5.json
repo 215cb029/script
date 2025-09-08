@@ -1,0 +1,68 @@
+{
+  "hyd": {
+    "ip": "10.24.44.196",
+    "sub-panel": {
+      "Hyd Pentos ELB CPU Usage": {
+        "expr1": "avg(haproxy_cpu{zone=\"in-hyderabad-1\",proxy_name=~\"prod-fdp-pentos___prod-pentos-hyd-b\"}) by(proxy_name)",
+        "appId": "elb"
+      },
+      "Hyd 99th Percentile k8s": {
+        "expr1": "max(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_99thPercentile{process=\"pentos-k8s\",zone=\"in-hyderabad-1\"})",
+        "appId": "prod-fdp-pentos"
+      },
+      "Hyd HTTP Request Rate": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-hyderabad-1\"})",
+        "appId": "prod-fdp-pentos"
+      },
+      "Hyd 4xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-hyderabad-1\"})",
+        "appId": "prod-fdp-pentos"
+      },
+      "Hyd 5xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-hyderabad-1\"})",
+        "appId": "prod-fdp-pentos"
+      }
+    }
+  },
+  "calvin": {
+    "ip": "10.83.45.174",
+    "sub-panel": {
+      "Calvin Pentos ELB CPU Usage": {
+        "expr1": "avg(haproxy_cpu{proxy_name=~\"prod-fdp-pentos___fdp-pentos-elb\",zone=\"in-chennai-2\"}) by(proxy_name)",
+        "appId": "elb"
+      },
+      "Calvin 99th Percentile k8s": {
+        "expr1": "max(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_99thPercentile{process=\"pentos-k8s\",zone=\"in-chennai-2\"})",
+        "appId": "prod-fdp-pentos"
+      },
+      "Calvin HTTP Request Rate": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-chennai-2\"})",
+        "appId": "prod-fdp-pentos"
+      },
+      "Calvin 4xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-chennai-2\"})",
+        "appId": "prod-fdp-pentos"
+      },
+      "Calvin 5xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"in-chennai-2\"})",
+        "appId": "prod-fdp-pentos"
+      },
+      "Noida 99th Percentile k8s": {
+        "expr1": "max(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_99thPercentile{process=\"pentos-k8s\",zone=\"asia-south2\"})",
+        "appId": "prod-fdp-pentos"
+      },
+      "Noida HTTP Request Rate": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_dispatches_OneMinuteRate{process=\"pentos-k8s\",zone=\"asia-south2\"})",
+        "appId": "prod-fdp-pentos"
+      },
+      "Noida 4xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_4xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"asia-south2\"})",
+        "appId": "prod-fdp-pentos"
+      },
+      "Noida 5xx Rate (per sec) (stacked) k8s": {
+        "expr1": "sum(jmx_metrics_io_dropwizard_jetty_MutableServletContextHandler_5xx_responses_OneMinuteRate{process=\"pentos-k8s\",zone=\"asia-south2\"})",
+        "appId": "prod-fdp-pentos"
+      }
+    }
+  }
+}
