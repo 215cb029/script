@@ -1,0 +1,87 @@
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.DescribeTopicsResult;
+import org.apache.kafka.clients.admin.TopicDescription;
+import org.apache.kafka.common.Cluster;
+import org.apache.kafka.common.Node;
+import org.apache.kafka.common.PartitionInfo;
+import org.example.KafkaClusterUtils;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+
+public class ITTest {
+
+    Cluster cluster;
+    @Before
+    public void init(){
+        String bootstrapServers = "localhost:9092";
+
+        Properties props = new Properties();
+        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+
+        try (AdminClient adminClient = AdminClient.create(props)) {
+            // Get all topic names
+            Set<String> topics = adminClient.listTopics().names().get();
+
+            // Describe all topics
+            DescribeTopicsResult describeTopicsResult = adminClient.describeTopics(topics);
+            Map<String, TopicDescription> descriptions = describeTopicsResult.all().get();
+
+            // Collect all brokers
+            Set<Node> brokers = descriptions.values().stream()
+                    .flatMap(td -> td.partitions().stream())
+                    .flatMap(p -> {
+                        List<Node> nodes = new ArrayList<>();
+                        if (p.leader() != null) nodes.add(p.leader());
+                        nodes.addAll(p.replicas());
+                        return nodes.stream();
+                    })
+                    .collect(Collectors.toSet());
+
+            // Build PartitionInfo for each topic
+            Map<String, List<PartitionInfo>> topicPartitionInfos = new HashMap<>();
+            for (Map.Entry<String, TopicDescription> entry : descriptions.entrySet()) {
+                String topic = entry.getKey();
+                TopicDescription desc = entry.getValue();
+
+                List<PartitionInfo> partitions = desc.partitions().stream()
+                        .map(p -> new PartitionInfo(
+                                topic,
+                                p.partition(),
+                                p.leader(),
+                                p.replicas().toArray(new Node[0]),
+                                p.isr().toArray(new Node[0])
+                        ))
+                        .collect(Collectors.toList());
+
+                topicPartitionInfos.put(topic, partitions);
+            }
+
+            // Construct Cluster object
+             cluster = new Cluster("clusterId", new ArrayList<>(brokers),
+                    topicPartitionInfos.values().stream()
+                            .flatMap(List::stream)
+                            .collect(Collectors.toList()),
+                    new HashSet<>(),
+                    new HashSet<>());
+
+            // Pass to your utility method
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+@Test
+public void partitionTest() throws ExecutionException, InterruptedException {
+        KafkaClusterUtils kafkaClusterUtils = new KafkaClusterUtils();
+       var res= kafkaClusterUtils.getTopicPartitionInfo(cluster,"my_topic");
+        Assert.assertEquals(res.size(), 0);
+
+    }
+}
