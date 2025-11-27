@@ -1,0 +1,242 @@
+manoranjans.vc@prod-fstream-compute-calvin-nm-0011:~$ cat /etc/hadoop/conf/log4j.properties
+##<!--Fri Dec 07 14:00:00 2018 v1.0-->
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+
+# Define some default values that can be overridden by system properties
+# To change daemon root logger use hadoop_root_logger in hadoop-env
+
+#Default values
+hadoop.root.logger=WARN,console
+hadoop.log.dir=.
+hadoop.log.file=hadoop.log
+hadoop.security.log.maxbackupindex=20
+hadoop.tasklog.taskid=null
+hadoop.tasklog.iscleanup=false
+hadoop.tasklog.noKeepSplits=4
+hadoop.tasklog.totalLogFileSize=100
+hadoop.tasklog.purgeLogSplits=true
+hadoop.tasklog.logsRetainHours=12
+hadoop.mapreduce.jobsummary.logger=${hadoop.root.logger}
+hadoop.mapreduce.jobsummary.log.file=hadoop-mapreduce.jobsummary.log
+log4j.category.SecurityLogger=${hadoop.security.logger}
+hadoop.security.log.file=SecurityAuth.audit
+hadoop.metrics.log.level=INFO
+mapred.audit.logger=INFO,console
+hdfs.audit.logger=INFO,console
+hadoop.security.logger=INFO,console
+log4j.threshhold=ALL
+greensight.dir=${hadoop.log.dir}
+greensight.timeline.file=greensight-timeline-writer.out
+greensight.timeline.logger=INFO, FILETimelineWriter
+
+#Changing log level for ranger class
+log4j.logger.org.apache.ranger.plugin.policyengine.RangerPolicyEngineImpl=WARN, NNRFA
+
+
+#Turning off logs for provider.BaseAuditHandler class
+log4j.logger.org.apache.ranger.audit.provider.BaseAuditHandler=ALL, exceptionAppender
+log4j.additivity.org.apache.ranger.audit.provider.BaseAuditHandler=false
+log4j.appender.exceptionAppender=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.exceptionAppender.File=${hadoop.log.dir}/SecurityAuth.audit
+log4j.appender.exceptionAppender.datePattern='-'dd'.log'
+log4j.appender.exceptionAppender.layout=org.apache.log4j.PatternLayout
+log4j.appender.exceptionAppender.layout.ConversionPattern=%-6r %d{ISO8601} %-5p %40.40c %x - %m\n
+
+
+
+
+log4j.additivity.org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit=false
+log4j.additivity.org.apache.hadoop.mapred.AuditLogger=false
+log4j.logger.org.apache.hadoop.mapred.AuditLogger=${mapred.audit.logger}
+log4j.logger.org.apache.hadoop.metrics2=${hadoop.metrics.log.level}
+log4j.logger.org.jets3t.service.impl.rest.httpclient.RestS3Service=ERROR
+log4j.logger.org.apache.hadoop.conf.Configuration.deprecation=WARN
+log4j.logger.org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit=${hdfs.audit.logger}
+log4j.rootLogger=${hadoop.root.logger}, EventCounter
+
+log4j.appender.NullAppender=org.apache.log4j.varia.NullAppender
+log4j.appender.EventCounter=org.apache.hadoop.log.metrics.EventCounter
+log4j.logger.org.apache.hadoop.yarn.server.resourcemanager.RMAppManager$ApplicationSummary=${yarn.server.resourcemanager.appsummary.logger}
+log4j.additivity.org.apache.hadoop.yarn.server.resourcemanager.RMAppManager$ApplicationSummary=false
+
+# Define the root logger to the system property "hadoop.root.logger".
+
+
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.target=System.err
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{2}: %m%n
+
+log4j.appender.TLA=org.apache.hadoop.mapred.TaskLogAppender
+log4j.appender.TLA.taskId=${hadoop.tasklog.taskid}
+log4j.appender.TLA.isCleanup=${hadoop.tasklog.iscleanup}
+log4j.appender.TLA.totalLogFileSize=${hadoop.tasklog.totalLogFileSize}
+log4j.appender.TLA.layout=org.apache.log4j.PatternLayout
+log4j.appender.TLA.layout.ConversionPattern=%d{ISO8601} %p %c: %m%n
+
+log4j.appender.DRFA=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.DRFA.File=${hadoop.log.dir}/${hadoop.log.file}
+log4j.appender.DRFA.DatePattern=.yyyy-MM-dd-HH
+log4j.appender.DRFA.layout=org.apache.log4j.PatternLayout
+log4j.appender.DRFA.layout.ConversionPattern=%d{ISO8601} %p %c: %m%n
+
+log4j.appender.DRFAS=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.DRFAS.rollingPolicy=org.apache.log4j.rolling.FixedWindowRollingPolicy
+log4j.appender.DRFAS.rollingPolicy.maxIndex=12
+log4j.appender.DRFAS.rollingPolicy.ActiveFileName=${hadoop.log.dir}/${hadoop.security.log.file}.log
+log4j.appender.DRFAS.rollingPolicy.FileNamePattern=${hadoop.log.dir}/${hadoop.security.log.file}-%i.log.gz
+log4j.appender.DRFAS.layout=org.apache.log4j.PatternLayout
+log4j.appender.DRFAS.layout.ConversionPattern=%d{ISO8601} %p %c: %m%n
+log4j.appender.DRFAS.triggeringPolicy=org.apache.log4j.rolling.SizeBasedTriggeringPolicy
+log4j.appender.DRFAS.triggeringPolicy.MaxFileSize=268435456
+
+log4j.appender.RFAS=org.apache.log4j.rolling.RollingFileAppender
+log4j.appender.RFAS.rollingPolicy=org.apache.log4j.rolling.FixedWindowRollingPolicy
+log4j.appender.RFAS.rollingPolicy.maxIndex=12
+log4j.appender.RFAS.rollingPolicy.ActiveFileName=${hadoop.log.dir}/${hadoop.security.log.file}.log
+log4j.appender.RFAS.rollingPolicy.FileNamePattern=${hadoop.log.dir}/${hadoop.security.log.file}-%i.log.gz
+log4j.appender.RFAS.layout=org.apache.log4j.PatternLayout
+log4j.appender.RFAS.layout.ConversionPattern=%d{ISO8601} %p %c: %m%n
+log4j.appender.RFAS.triggeringPolicy=org.apache.log4j.rolling.SizeBasedTriggeringPolicy
+log4j.appender.RFAS.triggeringPolicy.MaxFileSize=268435456
+
+log4j.appender.RFAAUDIT=org.apache.log4j.rolling.RollingFileAppender
+log4j.appender.RFAAUDIT.rollingPolicy=org.apache.log4j.rolling.TimeBasedRollingPolicy
+log4j.appender.RFAAUDIT.rollingPolicy.ActiveFileName=${hadoop.log.dir}/hdfs-audit.log
+log4j.appender.RFAAUDIT.rollingPolicy.FileNamePattern=${hadoop.log.dir}/hdfs-audit-%d{yyyyMMdd-HH}.log.gz
+log4j.appender.RFAAUDIT.layout=org.apache.log4j.PatternLayout
+log4j.appender.RFAAUDIT.layout.ConversionPattern=%d{ISO8601} %p %c{2}: %m%n
+log4j.appender.RFAAUDIT.triggeringPolicy=org.apache.log4j.rolling.SizeBasedTriggeringPolicy
+log4j.appender.RFAAUDIT.triggeringPolicy.maxFileSize=1073741824
+
+log4j.appender.DRFAAUDIT=org.apache.log4j.rolling.RollingFileAppender
+log4j.appender.DRFAAUDIT.rollingPolicy=org.apache.log4j.rolling.FixedWindowRollingPolicy
+log4j.appender.DRFAAUDIT.rollingPolicy.maxIndex=300
+log4j.appender.DRFAAUDIT.rollingPolicy.ActiveFileName=${hadoop.log.dir}/hdfs-audit.log
+log4j.appender.DRFAAUDIT.rollingPolicy.FileNamePattern=${hadoop.log.dir}/hdfs-audit-%i.log.gz
+log4j.appender.DRFAAUDIT.layout=org.apache.log4j.PatternLayout
+log4j.appender.DRFAAUDIT.layout.ConversionPattern=%d{ISO8601} %p %c{2}: %m%n
+log4j.appender.DRFAAUDIT.triggeringPolicy=org.apache.log4j.rolling.SizeBasedTriggeringPolicy
+log4j.appender.DRFAAUDIT.triggeringPolicy.MaxFileSize=1073741824
+
+
+log4j.appender.MRAUDIT=org.apache.log4j.rolling.RollingFileAppender
+log4j.appender.MRAUDIT.rollingPolicy=org.apache.log4j.rolling.FixedWindowRollingPolicy
+log4j.appender.MRAUDIT.rollingPolicy.maxIndex=12
+log4j.appender.MRAUDIT.rollingPolicy.ActiveFileName=${hadoop.log.dir}/mapred-audit.log
+log4j.appender.MRAUDIT.rollingPolicy.FileNamePattern=${hadoop.log.dir}/mapred-audit-%i.log.gz
+log4j.appender.MRAUDIT.layout=org.apache.log4j.PatternLayout
+log4j.appender.MRAUDIT.layout.ConversionPattern=%d{ISO8601} %p %c{2}: %m%n
+log4j.appender.MRAUDIT.triggeringPolicy=org.apache.log4j.rolling.SizeBasedTriggeringPolicy
+log4j.appender.MRAUDIT.triggeringPolicy.MaxFileSize=268435456
+
+
+log4j.appender.RFA=org.apache.log4j.rolling.RollingFileAppender
+log4j.appender.RFA.rollingPolicy=org.apache.log4j.rolling.FixedWindowRollingPolicy
+log4j.appender.RFA.rollingPolicy.maxIndex=300
+log4j.appender.RFA.rollingPolicy.ActiveFileName=${hadoop.log.dir}/${hadoop.log.file}
+log4j.appender.RFA.rollingPolicy.FileNamePattern=${hadoop.log.dir}/${hadoop.log.file}-%i.log.gz
+log4j.appender.RFA.layout=org.apache.log4j.PatternLayout
+log4j.appender.RFA.layout.ConversionPattern=%d{ISO8601} %-5p %c{2} (%F:%M(%L)) - %m%n
+log4j.appender.RFA.triggeringPolicy=org.apache.log4j.rolling.SizeBasedTriggeringPolicy
+log4j.appender.RFA.triggeringPolicy.MaxFileSize=268435456
+
+
+log4j.appender.NNRFA=org.apache.log4j.rolling.RollingFileAppender
+log4j.appender.NNRFA.rollingPolicy=org.apache.log4j.rolling.TimeBasedRollingPolicy
+log4j.appender.NNRFA.rollingPolicy.ActiveFileName=${hadoop.log.dir}/${hadoop.log.file}
+log4j.appender.NNRFA.rollingPolicy.FileNamePattern=${hadoop.log.dir}/${hadoop.log.file}-%d{yyyyMMdd-HH}.log.gz
+log4j.appender.NNRFA.layout=org.apache.log4j.PatternLayout
+log4j.appender.NNRFA.layout.ConversionPattern=%d{ISO8601} %-5p %c{2} (%F:%M(%L)) - %m%n
+log4j.appender.NNRFA.triggeringPolicy=org.apache.log4j.rolling.SizeBasedTriggeringPolicy
+log4j.appender.NNRFA.triggeringPolicy.maxFileSize=268435456
+
+log4j.appender.RMRFA=org.apache.log4j.rolling.RollingFileAppender
+log4j.appender.RMRFA.rollingPolicy=org.apache.log4j.rolling.TimeBasedRollingPolicy
+log4j.appender.RMRFA.rollingPolicy.ActiveFileName=${hadoop.log.dir}/${hadoop.log.file}
+log4j.appender.RMRFA.rollingPolicy.FileNamePattern=${hadoop.log.dir}/${hadoop.log.file}-%d{yyyyMMdd-HH}.log.gz
+log4j.appender.RMRFA.layout=org.apache.log4j.PatternLayout
+log4j.appender.RMRFA.layout.ConversionPattern=%d{ISO8601} %-5p %c{2} (%F:%M(%L)) - %m%n
+log4j.appender.RMRFA.triggeringPolicy=org.apache.log4j.rolling.SizeBasedTriggeringPolicy
+log4j.appender.RMRFA.triggeringPolicy.maxFileSize=268435456
+#
+# HDFS block state change log from block manager
+#
+# Uncomment the following to suppress normal block state change
+# messages from BlockManager in NameNode.
+#log4j.logger.BlockStateChange=WARN
+#Relative to Yarn Log Dir Prefix
+yarn.log.dir=.
+#
+# Job Summary Appender
+#
+# Use following logger to send summary to separate file defined by
+# hadoop.mapreduce.jobsummary.log.file rolled daily:
+# hadoop.mapreduce.jobsummary.logger=INFO,JSA
+#
+# Set the ResourceManager summary log filename
+yarn.server.resourcemanager.appsummary.log.file=hadoop-mapreduce.jobsummary.log
+# Set the ResourceManager summary log level and appender
+yarn.server.resourcemanager.appsummary.logger=${hadoop.root.logger}
+#yarn.server.resourcemanager.appsummary.logger=INFO,RMSUMMARY
+
+# To enable AppSummaryLogging for the RM,
+# set yarn.server.resourcemanager.appsummary.logger to
+# LEVEL,RMSUMMARY in hadoop-env.sh
+
+# Appender for ResourceManager Application Summary Log
+# Requires the following properties to be set
+#    - hadoop.log.dir (Hadoop Log directory)
+#    - yarn.server.resourcemanager.appsummary.log.file (resource manager app summary log filename)
+#    - yarn.server.resourcemanager.appsummary.logger (resource manager app summary log level and appender)
+log4j.appender.RMSUMMARY=org.apache.log4j.rolling.RollingFileAppender
+log4j.appender.RMSUMMARY.rollingPolicy=org.apache.log4j.rolling.FixedWindowRollingPolicy
+log4j.appender.RMSUMMARY.rollingPolicy.maxIndex=150
+log4j.appender.RMSUMMARY.rollingPolicy.ActiveFileName=${yarn.log.dir}/${yarn.server.resourcemanager.appsummary.log.file}
+log4j.appender.RMSUMMARY.rollingPolicy.FileNamePattern=${yarn.log.dir}/${yarn.server.resourcemanager.appsummary.log.file}-%i.log.gz
+log4j.appender.RMSUMMARY.layout=org.apache.log4j.PatternLayout
+log4j.appender.RMSUMMARY.layout.ConversionPattern=%d{ISO8601} %p %c{2}: %m%n
+log4j.appender.RMSUMMARY.triggeringPolicy=org.apache.log4j.rolling.SizeBasedTriggeringPolicy
+log4j.appender.RMSUMMARY.triggeringPolicy.MaxFileSize=268435456
+
+log4j.appender.JSA=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.JSA.rollingPolicy=org.apache.log4j.rolling.FixedWindowRollingPolicy
+log4j.appender.JSA.rollingPolicy.maxIndex=12
+log4j.appender.JSA.rollingPolicy.ActiveFileName=${yarn.log.dir}/${yarn.server.resourcemanager.appsummary.log.file}
+log4j.appender.JSA.rollingPolicy.FileNamePattern=${yarn.log.dir}/${yarn.server.resourcemanager.appsummary.log.file}-%i.log.gz
+log4j.appender.JSA.layout=org.apache.log4j.PatternLayout
+log4j.appender.JSA.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{2}: %m%n
+log4j.appender.JSA.triggeringPolicy=org.apache.log4j.rolling.SizeBasedTriggeringPolicy
+log4j.appender.JSA.triggeringPolicy.MaxFileSize=268435456
+
+log4j.appender.FILETimelineWriter=org.apache.log4j.RollingFileAppender
+log4j.appender.FILETimelineWriter.DatePattern='.'yyyy-MM-dd
+log4j.appender.FILETimelineWriter.File=${greensight.dir}/${greensight.timeline.file}
+log4j.appender.FILETimelineWriter.Append=true
+log4j.appender.FILETimelineWriter.layout=org.apache.log4j.PatternLayout
+log4j.appender.FILETimelineWriter.level=INFO
+log4j.appender.FILETimelineWriter.threshold=INFO
+log4j.appender.FILETimelineWriter.maxFileSize=9GB
+log4j.appender.FILETimelineWriter.MaxBackupIndex=20
+log4j.appender.FILETimelineWriter.layout.ConversionPattern=%d{ISO8601} - %m%n
+
+log4j.logger.com.flipkart.fdp.greensight.collector.timeline.v1.writer.LoggerTimelineWriter=${greensight.timeline.logger}
+log4j.additivity.com.flipkart.fdp.greensight.collector.timeline.v1.writer.LoggerTimelineWriter=false
